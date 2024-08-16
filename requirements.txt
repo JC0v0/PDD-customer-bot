@@ -1,0 +1,17 @@
+selenium==4.9.0
+webdriver_manager==3.8.6
+requests==2.28.2
+PyInstaller==5.9.0
+selenium-stealth==1.0.6
+tkinter  # 通常包含在Python标准库中,可能不需要单独安装
+asyncio  # Python 3.4+已包含,不需要单独安装
+json  # Python标准库,不需要单独安装
+datetime  # Python标准库,不需要单独安装
+threading  # Python标准库,不需要单独安装
+queue  # Python标准库,不需要单独安装
+os  # Python标准库,不需要单独安装
+logging  # Python标准库,不需要单独安装
+time  # Python标准库,不需要单独安装
+re  # Python标准库,不需要单独安装
+tempfile  # Python标准库,不需要单独安装
+concurrent.futures  # Python 3.2+已包含,不需要单独安装
