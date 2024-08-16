@@ -10,6 +10,7 @@
    - 添加、删除、批量添加账号
    - 自动登录获取cookies
    - 管理账号cookies的有效期
+![c18772d3fc78de91f631e7b31626e5d](https://github.com/user-attachments/assets/d0688a24-7e35-42d0-983c-ec0c9854b26d)
 
 2. **消息监控**
    - 监控多个账号的未读消息
@@ -19,11 +20,13 @@
 3. **人工转接**
    - 根据关键词识别需要人工服务的对话
    - 自动将对话转接给在线客服
+![d35f6c048e394f89b32e6a6c56c4391](https://github.com/user-attachments/assets/ad770de9-f99d-4622-8f19-13845a699d6d)
 
 4. **评论管理**
    - 获取指定日期范围内的商品评论
    - 自动回复评论
    - 支持自定义评论回复话术
+![d1d2d8c7e7aa07e3a48172d497ccb5f](https://github.com/user-attachments/assets/30419d7b-d791-450e-a94f-67f14e3bea83)
 
 5. **客服状态设置**
    - 批量设置客服账号的在线状态(在线、忙碌、离线)
