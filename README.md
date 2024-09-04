@@ -57,7 +57,7 @@
 
 ## 安装步骤
 
-1. 克隆仓库到本地:git clone https://github.com/your-username/pdd-customer-service.git
+1. 克隆仓库到本地:git clone https://github.com/JC0v0/Ddd-customer-service.git
 2. 进入项目目录:cd pdd-customer-service
 3. 安装所需依赖:pip install -r requirements.txt
 4. 下载与您Chrome浏览器版本匹配的ChromeDriver,并将其放置在`chromedriver-win64`目录下。
