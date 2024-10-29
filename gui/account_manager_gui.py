@@ -57,7 +57,8 @@ class AccountManagerGUI:
         tree_frame = ttk.Frame(self.frame)
         tree_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=20, pady=20)
 
-        self.account_tree = ttk.Treeview(tree_frame, columns=('Name', 'Expiry', 'Status'), show='headings', style='Treeview')
+        self.account_tree = ttk.Treeview(tree_frame, columns=('Name', 'Expiry', 'Status'), 
+                                        show='headings', style='Treeview', selectmode='extended')
         self.account_tree.heading('Name', text='账号名称')
         self.account_tree.heading('Expiry', text='过期时间')
         self.account_tree.heading('Status', text='在线状态')
@@ -96,36 +97,48 @@ class AccountManagerGUI:
     def show_context_menu(self, event):
         item = self.account_tree.identify_row(event.y)
         if item:
-            self.account_tree.selection_set(item)
+            if item not in self.account_tree.selection():
+                self.account_tree.selection_set(item)
             self.context_menu.post(event.x_root, event.y_root)
 
     def set_account_status(self, status):
         selected = self.account_tree.selection()
         if not selected:
-            messagebox.showwarning("警告", "请先选择个账号")
+            messagebox.showwarning("警告", "请先选择账号")
             return
 
-        account_name = self.account_tree.item(selected[0])['values'][0]
-        account_data = self.account_manager.accounts.get(account_name)
-        if account_data:
-            result = set_csstatus(account_name, account_data, status)
-            if result and result.get('success'):
-                success_message = f"账号 {account_name} 状态设置成功: {status}"
-                self.logger.info(success_message)
-                
-                # 更新账号管理器中的状态
-                self.account_manager.accounts[account_name]['status'] = status
-                
-                # 立即更新账号列表
-                self.update_account_list()
+        success_count = 0
+        fail_count = 0
+        
+        for item in selected:
+            account_name = self.account_tree.item(item)['values'][0]
+            account_data = self.account_manager.accounts.get(account_name)
+            
+            if account_data:
+                result = set_csstatus(account_name, account_data, status)
+                if result and result.get('success'):
+                    success_message = f"账号 {account_name} 状态设置成功: {status}"
+                    self.logger.info(success_message)
+                    self.account_manager.accounts[account_name]['status'] = status
+                    success_count += 1
+                else:
+                    error_message = f"账号 {account_name} 状态设置失败"
+                    self.logger.error(error_message)
+                    fail_count += 1
             else:
-                error_message = f"账号 {account_name} 状态设置失败"
-                self.logger.error(error_message)
-                messagebox.showerror("设置失败", error_message)
+                warning_message = f"未找到账号数据: {account_name}"
+                self.logger.warning(warning_message)
+                fail_count += 1
+
+        # 更新账号列表
+        self.update_account_list()
+        
+        # 显示操作结果
+        result_message = f"操作完成\n成功: {success_count} 个\n失败: {fail_count} 个"
+        if fail_count > 0:
+            messagebox.showwarning("操作结果", result_message)
         else:
-            warning_message = f"未找到账号数据: {account_name}"
-            self.logger.warning(warning_message)
-            messagebox.showwarning("警告", warning_message)
+            messagebox.showinfo("操作结果", result_message)
 
     def add_account(self):
         dialog = AccountInputDialog(self.frame, title="添加账号")
@@ -146,7 +159,7 @@ class AccountManagerGUI:
     def remove_account(self):
         selected = self.account_tree.selection()
         if not selected:
-            messagebox.showwarning("警告", "请��选择要删除的账号")
+            messagebox.showwarning("警告", "请先选择要删除的账号")
             return
 
         account_name = self.account_tree.item(selected[0])['values'][0]
@@ -199,7 +212,7 @@ class AccountManagerGUI:
     def edit_account(self):
         selected = self.account_tree.selection()
         if not selected:
-            messagebox.showwarning("警告", "请先选择要修改��账号")
+            messagebox.showwarning("警告", "请先选择要修改的账号")
             return
 
         account_name = self.account_tree.item(selected[0])['values'][0]

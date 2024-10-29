@@ -61,21 +61,12 @@ class AccountMonitor:
             response = requests.post(url, headers=headers, json=data, cookies=cookies)
             
             if response.status_code == 200:
-                result = response.json()
-                if result.get('success'):
-                    status_text = STATUS_MAP.get(status) or STATUS_MAP.get(int(status), "未知状态")
-                    logger.info(f"账号 {account_name} 设置状态成功: {status_text}")
-                else:
-                    logger.error(f"账号 {account_name} 设置状态失败: {result.get('error_msg', '未知错误')}")
-                return result
+                return {'success': True}
             else:
-                logger.error(f"账号 {account_name} 请求失败，状态码：{response.status_code}")
-                logger.error(f"响应内容：{response.text}")
-                return None
+                return {'success': False}
 
-        except requests.exceptions.RequestException as e:
-            logger.error(f"账号 {account_name} 请求发生异常：{e}")
-            return None
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
     def batch_set_csstatus(self, status: str) -> None:
         logger.info(f"开始为 {len(self.accounts)} 个账号批量设置状态...")
 
