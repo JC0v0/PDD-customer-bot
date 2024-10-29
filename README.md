@@ -57,10 +57,12 @@
 ## 安装步骤
 
 1. 克隆仓库到本地:
-```git clone https://github.com/JC0v0/PDD-customer-bot.git
+```
+git clone https://github.com/JC0v0/PDD-customer-bot.git
 ```
 2. 进入项目目录:
-```cd pdd-customer-service
+```
+cd pdd-customer-service
 ```
 3. 安装所需依赖:
 ```
