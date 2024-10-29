@@ -1,13 +1,15 @@
 import requests
 from datetime import datetime, timedelta
 from config import COZE_API_URL, coze_token, coze_bot_id
-from logger import get_logger
-logger = get_logger('coze_api')
+from utils.logger import get_logger, get_log_queue
+
 class CozeAPIHandler:
     def __init__(self):
         self.chat_history = {}
         self.chat_history_timestamps = {}
-
+        self.logger = get_logger('coze_api')
+        self.log_queue = get_log_queue()
+    
     def generate_reply(self, recipient_uid, message_content, message_id, extra_info=None):
         headers = {
             "Authorization": f"Bearer {coze_token}",
@@ -62,7 +64,7 @@ class CozeAPIHandler:
                 return "抱歉，我暂时无法回答您的问题。请稍后再试或联系人工客服。"
         
         except Exception as e:
-            logger.info(f"调用Coze API时发生错误：{e}")
+            self.logger.info(f"调用Coze API时发生错误：{e}")
             return "抱歉，我暂时无法回答您的问题。请稍后再试或联系人工客服。"
 
     def _clean_old_chat_history(self, recipient_uid):

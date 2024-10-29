@@ -1,8 +1,8 @@
 import PyInstaller.__main__
 import os
 import json
-
 import selenium_stealth
+
 # 获取当前脚本的目录
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -15,6 +15,11 @@ if not os.path.exists(config_dir):
 account_cookies_path = os.path.join(config_dir, 'account_cookies.json')
 account_status_path = os.path.join(config_dir, 'account_status.json')
 config_py_path = os.path.join(current_dir, 'config.py')
+
+# 确保 icon 目录存在
+icon_dir = os.path.join(current_dir, 'icon')
+if not os.path.exists(icon_dir):
+    os.makedirs(icon_dir)
 
 # 创建或确保文件存在
 def ensure_file(file_path):
@@ -45,6 +50,7 @@ PyInstaller.__main__.run([
     f'--add-data={account_cookies_path};config',
     f'--add-data={account_status_path};config',
     f'--add-data={config_py_path};.',
+    f'--add-data={icon_dir};icon',  # 添加图标目录
     f'--add-binary={chromedriver_path};chromedriver-win64',
     f'--add-data={js_dir};selenium_stealth/js',
     '--icon=PddWorkbench.ico',

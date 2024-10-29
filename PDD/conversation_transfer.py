@@ -1,7 +1,8 @@
 import requests
 import random
+import time
 from config import getAssignCsList_url, move_conversation_url
-from logger import get_logger
+from utils.logger import get_logger
 logger = get_logger('conversation_transfer')
 class ConversationTransfer:
     def __init__(self, account_name, headers, cookies):
@@ -56,14 +57,26 @@ class ConversationTransfer:
         selected_cs_id = random.choice(list(online_cs_list.keys()))
         selected_cs = online_cs_list[selected_cs_id]
 
-        result = self.move_conversation(selected_cs_id, uid)
-        if result and result.get('success'):
-            if result['result'].get('result') == 'ok':
-                logger.info(f"成功将用户 {uid} 的对话转移给客服 {selected_cs['username']} (ID: {selected_cs_id})")
+        transfer_success = False
+        retry_count = 5
+
+        for attempt in range(retry_count):
+            result = self.move_conversation(selected_cs_id, uid)
+            if result and result.get('success'):
+                if result['success'].get('result') == 'ok':
+                    logger.info(f"成功将用户 {uid} 的对话转移给客服 {selected_cs['username']} (ID: {selected_cs_id})")
+                    transfer_success = True
+                    break
+                else:
+                    error_msg = result['result'].get('error_msg', '未知错误')
+                    logger.error(f"转移对话失败: {error_msg}")
             else:
-                error_msg = result['result'].get('error_msg', '未知错误')
-                logger.error(f"转移对话失败: {error_msg}")
-        else:
-            logger.error(f"API调用失败")
+                logger.error(f"API调用失败，尝试次数: {attempt + 1}")
+            
+            if attempt < retry_count - 1:
+                time.sleep(1)  # 在重试之前等待1秒
+
+        if not transfer_success:
+            logger.error(f"转移对话失败，已尝试 {retry_count} 次")
         
         return result

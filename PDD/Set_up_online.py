@@ -3,7 +3,7 @@ import logging
 import requests
 from typing import Dict, Any
 from config import set_csstatus_url
-from logger import get_logger
+from utils.logger import get_logger
 logger = get_logger('set_up_online')
 
 
@@ -11,6 +11,9 @@ STATUS_MAP = {
     "0": "忙碌",
     "1": "在线",
     "3": "离线",
+    "忙碌":0,
+    "在线":1,
+    "离线":3,
     0: "忙碌",
     1: "在线",
     3: "离线"
@@ -34,7 +37,9 @@ class AccountMonitor:
 
     @staticmethod
     def set_csstatus(account_name: str, account_data: Dict[str, Any], status: str) -> Dict[str, Any]:
-        logger.info(f"设置状态值: {status}")
+        # 将文本状态转换为数字状态
+        if status in STATUS_MAP:
+            status = STATUS_MAP[status]
         url = set_csstatus_url
         
         data = {
@@ -85,7 +90,3 @@ def set_csstatus(account_name, account_data, status):
 def batch_set_csstatus(status):
     account_manager = AccountMonitor()
     account_manager.batch_set_csstatus(status)
-
-if __name__ == "__main__":
-    monitor = AccountMonitor()
-    monitor.batch_set_csstatus("1")  # 设置所有账号为在线状态

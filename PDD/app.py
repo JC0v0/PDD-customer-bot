@@ -1,3 +1,15 @@
+import sys
+import os
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
+
+# 获取当前文件的目录
+current_dir = os.path.dirname(os.path.abspath(__file__))
+# 获取父目录（项目根目录）
+parent_dir = os.path.dirname(current_dir)
+# 将项目根目录添加到Python路径
+sys.path.insert(0, parent_dir)
+
 import threading
 import requests
 import json
@@ -6,13 +18,11 @@ from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
 from PDD.messages import Message
 from config import *
-import queue
-import os
-import logging
 from PDD.keyword_transfer import KeywordTransfer
 from PDD.conversation_transfer import ConversationTransfer
 from AI.Coze.coze_api import CozeAPIHandler
-from logger import get_logger, get_log_queue
+from utils.logger import get_logger,get_log_queue
+import queue
 
 # 获取logger和log_queue
 logger = get_logger('app')
@@ -39,11 +49,10 @@ class AccountMonitor:
         self.keyword_transfer = KeywordTransfer()
         self.conversation_transfer = ConversationTransfer(account_name, self.headers, self.cookies)
         self.coze_api_handler = CozeAPIHandler()
-        self.chat_log_dir = os.path.join("chat_logs", account_name)
-        os.makedirs(self.chat_log_dir, exist_ok=True)
+        self.reply_executor = ThreadPoolExecutor(max_workers=5)  # 用于处理回复的线程池
 
     def get_latest_messages(self):
-        data = {"data":{"offset":0,"size":10}}
+        data = {"data":{"cmd":"latest_conversations","size":100}}
         try:
             response = requests.post(LATEST_CONVERSATIONS_URL, headers=self.headers, json=data, cookies=self.cookies)
             response.raise_for_status()
@@ -52,33 +61,13 @@ class AccountMonitor:
             logger.error(f"账号 {self.account_name} 请求发生异常：{e}")
             return None
         
-    def save_chat_log(self, user_id, message, is_user=True):
-        log_entry = {
-            "timestamp": datetime.now().isoformat(),
-            "role": "user" if is_user else "assistant",
-            "content": message
-        }
-        
-        chat_log_file = os.path.join(self.chat_log_dir, f"{user_id}_chat_log.json")
-        
-        try:
-            if os.path.exists(chat_log_file):
-                with open(chat_log_file, 'r+', encoding='utf-8') as f:
-                    chat_log = json.load(f)
-                    chat_log.append(log_entry)
-                    f.seek(0)
-                    json.dump(chat_log, f, ensure_ascii=False, indent=2)
-            else:
-                with open(chat_log_file, 'w', encoding='utf-8') as f:
-                    json.dump([log_entry], f, ensure_ascii=False, indent=2)
-        except Exception as e:
-            logger.error(f"保存聊天记录时发生错误: {e}")
-            
     def process_new_messages(self, messages):
         processed_messages = []
         for msg_data in messages:
             msg = Message.from_dict(msg_data)
             if not msg.status == 'read':
+                logger.info(f"收到来自用户 {msg.from_user.uid} 的新消息: {msg.content}")
+                
                 message_info = {
                     "账号": self.account_name,
                     "时间": msg.timestamp,
@@ -138,7 +127,6 @@ class AccountMonitor:
         try:
             response = requests.post(SEND_MESSAGE_URL, headers=self.headers, json=data, cookies=self.cookies)
             if response.status_code == 200:
-                logger.info(f"账号 {self.account_name} 成功发送消息给 {recipient_uid}: {message_content}")
                 return response.json()
             else:
                 logger.error(f"账号 {self.account_name} 发送消息失败，状态码：{response.status_code}")
@@ -148,31 +136,35 @@ class AccountMonitor:
             logger.error(f"账号 {self.account_name} 发送消息时发生异常：{e}")
             return None
 
-    def auto_reply(self, message):
+    async def auto_reply(self, message):
         content = message['内容']
         recipient_uid = message['发送者'].split()[0]
 
-        # 保存用户消息到聊天记录
-        self.save_chat_log(recipient_uid, content, is_user=True)
-
         if self.keyword_transfer.need_human_service(content):
-            transfer_result = self.conversation_transfer.auto_transfer_conversation(recipient_uid)
+            transfer_result = await asyncio.to_thread(self.conversation_transfer.auto_transfer_conversation, recipient_uid)
             reply = "您的请求已收到，正在为您转接人工客服，请稍候。" if transfer_result and transfer_result.get('success') else "抱歉，转接人工客服失败，请稍后再试。"
         else:
             extra_info = None
             if message.get('商品信息'):
                 extra_info = f"商品信息: {message['商品信息']}"
-            reply = self.coze_api_handler.generate_reply(recipient_uid, content, message['消息ID'], extra_info)
+            reply = await asyncio.to_thread(self.coze_api_handler.generate_reply, recipient_uid, content, message['消息ID'], extra_info)
 
-        # 保存系统回复到聊天记录
-        self.save_chat_log(recipient_uid, reply, is_user=False)
         return reply
-            
-    def monitor_and_reply(self, stop_event):
-        logger.info(f"开始监控账号 {self.account_name} 的未读消息并自动回复...")
+
+    async def process_and_reply(self, message):
+        reply_content = await self.auto_reply(message)
+        recipient_uid = message['发送者'].split()[0]
+        await asyncio.to_thread(self.send_customer_service_message, recipient_uid, reply_content)
+        
+        # 修改这里，同时记录用户的问题和系统的回复
+        logger.info(f"用户 {recipient_uid} 的问题: {message['内容']}")
+        logger.info(f"系统回复给 {recipient_uid}: {reply_content}")
+
+    async def monitor_and_reply(self, stop_event):
+        logger.info(f"开始监控账号 {self.account_name}")
         while not stop_event.is_set():
             try:
-                response = self.get_latest_messages()
+                response = await asyncio.to_thread(self.get_latest_messages)
                 if response and response.get('success'):
                     conversations = response.get('result', {}).get('conversations', [])
                     if conversations:
@@ -180,63 +172,30 @@ class AccountMonitor:
                         if new_messages:
                             processed_messages = self.process_new_messages(new_messages)
                             self.last_processed_msg_id = new_messages[0].get('msg_id')
-                            for message in processed_messages:
-                                logger.info(f"\n账号 {self.account_name} 收到新消息：")
-                                logger.info(json.dumps(message, ensure_ascii=False, indent=2, default=str))
-
-                                # 自动回复
-                                reply_content = self.auto_reply(message)
-                                recipient_uid = message['发送者'].split()[0]  # 提取UID
-                                self.send_customer_service_message(recipient_uid, reply_content)
-                        else:
-                            logger.info(f"{datetime.now()}: 账号 {self.account_name} 没有新的未读消息")
+                            # 使用asyncio.gather并发处理所有新消息
+                            await asyncio.gather(*[self.process_and_reply(message) for message in processed_messages])
                     else:
-                        logger.info(f"{datetime.now()}: 账号 {self.account_name} 没有对话")
+                        logger.debug(f"账号 {self.account_name} 没有新消息")
                 else:
-                    logger.warning(f"{datetime.now()}: 账号 {self.account_name} 获取消息失败")
+                    logger.debug(f"账号 {self.account_name} 没有最新消息的响应")
             except Exception as e:
                 logger.error(f"{datetime.now()}: 账号 {self.account_name} 处理消息时发生错误: {e}")
             
-            # 检查是否收到停止信号
-            if stop_event.is_set():
-                break
-            time.sleep(3)  # 每3秒检查一次
+            await asyncio.sleep(0.5)  # 每0.5秒检查一次
         
         logger.info(f"账号 {self.account_name} 的监控已停止")
 
-def monitor_all_accounts(stop_event):
+async def monitor_all_accounts(stop_event):
     account_manager = AccountManager()
     accounts = account_manager.accounts
 
     logger.info(f"开始监控 {len(accounts)} 个账号...")
 
-    with ThreadPoolExecutor(max_workers=len(accounts)) as executor:
-        futures = [executor.submit(AccountMonitor(account_name, account_data).monitor_and_reply, stop_event) 
-                for account_name, account_data in accounts.items()]
-        
-        while not stop_event.is_set():
-            if all(future.done() for future in futures):
-                break
-            time.sleep(1)
+    async def monitor_account(account_name, account_data):
+        monitor = AccountMonitor(account_name, account_data)
+        await monitor.monitor_and_reply(stop_event)
 
-        if stop_event.is_set():
-            logger.info("收到停止信号，正在停止所有监控...")
-            for future in futures:
-                if not future.done():
-                    future.cancel()
-    
+    tasks = [monitor_account(account_name, account_data) for account_name, account_data in accounts.items()]
+    await asyncio.gather(*tasks)
+
     logger.info("所有账号监控已停止")
-
-if __name__ == "__main__":
-    stop_event = threading.Event()
-    try:
-        monitor_all_accounts(stop_event)
-    except KeyboardInterrupt:
-        logger.info("\n程序被用户中断。正在停止所有监控...")
-        stop_event.set()
-    except Exception as e:
-        logger.error(f"{datetime.now()}: 发生错误: {e}")
-        logger.info("5秒后重新启动监控...")
-        time.sleep(5)
-        stop_event.clear()
-        monitor_all_accounts(stop_event)
