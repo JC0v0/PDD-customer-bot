@@ -10,7 +10,8 @@
    - 添加、删除、批量添加账号
    - 自动登录获取cookies
    - 管理账号cookies的有效期
-![c18772d3fc78de91f631e7b31626e5d](https://github.com/user-attachments/assets/d0688a24-7e35-42d0-983c-ec0c9854b26d)
+![image](https://github.com/user-attachments/assets/272c7106-5788-4b7d-bbc5-b4b87c48a2e7)
+
 
 2. **消息监控**
    - 监控多个账号的未读消息
@@ -26,13 +27,11 @@
    - 获取指定日期范围内的商品评论
    - 自动回复评论
    - 支持自定义评论回复话术
-![d1d2d8c7e7aa07e3a48172d497ccb5f](https://github.com/user-attachments/assets/30419d7b-d791-450e-a94f-67f14e3bea83)
-
-5. **客服状态设置**
-   - 批量设置客服账号的在线状态(在线、忙碌、离线)
+![image](https://github.com/user-attachments/assets/5c9a7bf7-7c0c-4d02-873a-5d6d8b097ed3)
 
 6. **关键词设置**
    - 管理触发人工服务的关键词和正则表达式
+![image](https://github.com/user-attachments/assets/a0fbac59-c724-4d5c-a320-c4bc53cf6605)
 
 7. **图形用户界面**
    - 使用tkinter构建的多标签页界面
