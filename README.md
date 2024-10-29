@@ -56,23 +56,34 @@
 
 ## 安装步骤
 
-1. 克隆仓库到本地:git clone https://github.com/JC0v0/PDD-customer-bot.git
-2. 进入项目目录:cd pdd-customer-service
-3. 安装所需依赖:pip install -r requirements.txt
+1. 克隆仓库到本地:
+```git clone https://github.com/JC0v0/PDD-customer-bot.git
+```
+2. 进入项目目录:
+```cd pdd-customer-service
+```
+3. 安装所需依赖:
+```
+pip install -r requirements.txt
+```
 4. 下载与您Chrome浏览器版本匹配的ChromeDriver,并将其放置在`chromedriver-win64`目录下。
 
 ## 使用方法
 
-1. 运行主程序:python main.py
+1. 运行主程序
+   运行 ‘拼多多客服系统.exe’或者命令行输入：
+```
+python main.py
+```
 
-2. 在图形界面中添加您的拼多多商家账号。
+3. 在图形界面中添加您的拼多多商家账号。
 
-3. 设置自动回复关键词和评论回复话术。
+4. 设置自动回复关键词和评论回复话术。
 
-4. 开始监控消息和管理评论。
+5. 开始监控消息和管理评论。
 
-5. 在config.py文件中设置你的Coze API
-  ```
+6. 在config.py文件中设置你的Coze API
+```
 coze_token = "pat_bUk***************"
 coze_bot_id = "73*************"
 ```
