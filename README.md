@@ -7,7 +7,7 @@
 ## 主要功能
 
 1. **账号管理**
-   - 添加、删除、批量添加账号
+   - 添加、删除、账号
    - 自动登录获取cookies
    - 管理账号cookies的有效期
 ![image](https://github.com/user-attachments/assets/272c7106-5788-4b7d-bbc5-b4b87c48a2e7)
