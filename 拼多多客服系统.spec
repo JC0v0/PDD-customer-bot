@@ -1,8 +1,8 @@
 # -*- mode: python ; coding: utf-8 -*-
 from PyInstaller.utils.hooks import collect_all
 
-datas = [('c:\\Users\\Administrator\\Desktop\\拼多多AI客服--发行版\\config\\account_cookies.json', 'config'), ('c:\\Users\\Administrator\\Desktop\\拼多多AI客服--发行版\\config\\account_status.json', 'config'), ('c:\\Users\\Administrator\\Desktop\\拼多多AI客服--发行版\\config.py', '.'), ('c:\\Users\\Administrator\\Desktop\\拼多多AI客服--发行版\\icon', 'icon'), ('C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\selenium_stealth\\js', 'selenium_stealth/js')]
-binaries = [('c:\\Users\\Administrator\\Desktop\\拼多多AI客服--发行版\\chromedriver-win64\\chromedriver.exe', 'chromedriver-win64')]
+datas = [('e:\\拼多多后台\\拼多多AI客服--测试\\config\\account_cookies.json', 'config'), ('e:\\拼多多后台\\拼多多AI客服--测试\\config\\account_status.json', 'config'), ('e:\\拼多多后台\\拼多多AI客服--测试\\config.py', '.'), ('e:\\拼多多后台\\拼多多AI客服--测试\\icon', 'icon'), ('E:\\拼多多后台\\拼多多AI客服--测试\\.venv\\Lib\\site-packages\\selenium_stealth\\js', 'selenium_stealth/js')]
+binaries = []
 hiddenimports = ['config', 'selenium', 'selenium_stealth']
 tmp_ret = collect_all('selenium_stealth')
 datas += tmp_ret[0]; binaries += tmp_ret[1]; hiddenimports += tmp_ret[2]

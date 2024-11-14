@@ -50,7 +50,8 @@ class AccountMonitor:
         self.conversation_transfer = ConversationTransfer(account_name, self.headers, self.cookies)
         self.coze_api_handler = CozeAPIHandler()
         self.reply_executor = ThreadPoolExecutor(max_workers=5)  # 用于处理回复的线程池
-
+        self.logger = get_logger('app')
+        self.log_queue = get_log_queue()
     def get_latest_messages(self):
         data = {"data":{"cmd":"latest_conversations","size":100}}
         try:
@@ -58,7 +59,7 @@ class AccountMonitor:
             response.raise_for_status()
             return response.json()
         except requests.exceptions.RequestException as e:
-            logger.error(f"账号 {self.account_name} 请求发生异常：{e}")
+            self.logger.error(f"账号 {self.account_name} 请求发生异常：{e}")
             return None
         
     def process_new_messages(self, messages):
@@ -66,7 +67,7 @@ class AccountMonitor:
         for msg_data in messages:
             msg = Message.from_dict(msg_data)
             if not msg.status == 'read':
-                logger.info(f"收到来自用户 {msg.from_user.uid} 的新消息: {msg.content}")
+                self.logger.info(f"收到来自用户 {msg.from_user.uid} 的新消息: {msg.content}")
                 
                 message_info = {
                     "账号": self.account_name,
@@ -129,11 +130,11 @@ class AccountMonitor:
             if response.status_code == 200:
                 return response.json()
             else:
-                logger.error(f"账号 {self.account_name} 发送消息失败，状态码：{response.status_code}")
-                logger.error(f"响应内容：{response.text}")
+                self.logger.error(f"账号 {self.account_name} 发送消息失败，状态码：{response.status_code}")
+                self.logger.error(f"响应内容：{response.text}")
                 return None
         except requests.exceptions.RequestException as e:
-            logger.error(f"账号 {self.account_name} 发送消息时发生异常：{e}")
+            self.logger.error(f"账号 {self.account_name} 发送消息时发生异常：{e}")
             return None
 
     async def auto_reply(self, message):
@@ -157,11 +158,11 @@ class AccountMonitor:
         await asyncio.to_thread(self.send_customer_service_message, recipient_uid, reply_content)
         
         # 修改这里，同时记录用户的问题和系统的回复
-        logger.info(f"用户 {recipient_uid} 的问题: {message['内容']}")
-        logger.info(f"系统回复给 {recipient_uid}: {reply_content}")
+        self.logger.info(f"用户 {recipient_uid} 的问题: {message['内容']}")
+        self.logger.info(f"系统回复给 {recipient_uid}: {reply_content}")
 
     async def monitor_and_reply(self, stop_event):
-        logger.info(f"开始监控账号 {self.account_name}")
+        self.logger.info(f"开始监控账号 {self.account_name}")
         while not stop_event.is_set():
             try:
                 response = await asyncio.to_thread(self.get_latest_messages)
@@ -175,15 +176,15 @@ class AccountMonitor:
                             # 使用asyncio.gather并发处理所有新消息
                             await asyncio.gather(*[self.process_and_reply(message) for message in processed_messages])
                     else:
-                        logger.debug(f"账号 {self.account_name} 没有新消息")
+                        self.logger.debug(f"账号 {self.account_name} 没有新消息")
                 else:
-                    logger.debug(f"账号 {self.account_name} 没有最新消息的响应")
+                    self.logger.debug(f"账号 {self.account_name} 没有最新消息的响应")
             except Exception as e:
-                logger.error(f"{datetime.now()}: 账号 {self.account_name} 处理消息时发生错误: {e}")
+                self.logger.error(f"{datetime.now()}: 账号 {self.account_name} 处理消息时发生错误: {e}")
             
             await asyncio.sleep(0.5)  # 每0.5秒检查一次
         
-        logger.info(f"账号 {self.account_name} 的监控已停止")
+        self.logger.info(f"账号 {self.account_name} 的监控已停止")
 
 async def monitor_all_accounts(stop_event):
     account_manager = AccountManager()

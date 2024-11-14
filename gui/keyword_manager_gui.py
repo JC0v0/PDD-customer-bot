@@ -13,18 +13,18 @@ class KeywordManagerGUI:
         self.load_keywords()
 
     def create_widgets(self):
-        keyword_frame = ttk.LabelFrame(self.frame, text="人工服务关键词", padding=(10, 5))
+        keyword_frame = ttk.LabelFrame(self.frame, text="人工服务关键词", padding=(10, 50))
         keyword_frame.pack(side=tk.LEFT, padx=10, pady=10, fill=tk.BOTH, expand=True)
 
         ttk.Label(keyword_frame, text="关键词:").grid(row=0, column=0, sticky=tk.W, padx=5, pady=5)
-        self.keyword_text = scrolledtext.ScrolledText(keyword_frame, wrap=tk.WORD, width=40, height=10)
+        self.keyword_text = scrolledtext.ScrolledText(keyword_frame, wrap=tk.WORD, width=30, height=30)
         self.keyword_text.grid(row=0, column=1, padx=5, pady=5, sticky='nsew')
 
-        regex_frame = ttk.LabelFrame(self.frame, text="正则表达式模式", padding=(10, 5))
+        regex_frame = ttk.LabelFrame(self.frame, text="正则表达式模式", padding=(10, 50))
         regex_frame.pack(side=tk.LEFT, padx=10, pady=10, fill=tk.BOTH, expand=True)
 
         ttk.Label(regex_frame, text="正则表达式:").grid(row=0, column=0, sticky=tk.W, padx=5, pady=5)
-        self.regex_text = scrolledtext.ScrolledText(regex_frame, wrap=tk.WORD, width=40, height=10)
+        self.regex_text = scrolledtext.ScrolledText(regex_frame, wrap=tk.WORD, width=30, height=30)
         self.regex_text.grid(row=0, column=1, padx=5, pady=5, sticky='nsew')
 
         button_frame = ttk.Frame(self.frame)

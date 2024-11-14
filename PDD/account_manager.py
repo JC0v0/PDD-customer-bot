@@ -8,7 +8,6 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
-from webdriver_manager.chrome import ChromeDriverManager
 from config import LOGIN_URL
 import asyncio
 from selenium_stealth import stealth
@@ -16,6 +15,7 @@ import stat
 import shutil
 from utils.logger import get_logger,get_log_queue
 from selenium.webdriver.common.keys import Keys
+import sys
 
 
 class AccountManager:
@@ -51,8 +51,7 @@ class AccountManager:
                 return (datetime.now(timezone.utc) + timedelta(hours=12)).isoformat()
         return (datetime.now(timezone.utc) + timedelta(hours=12)).isoformat()
 
-    def get_accounts(self):
-        return list(self.accounts.keys())
+
 
     def save_accounts(self):
         """
@@ -107,25 +106,6 @@ class AccountManager:
             if os.path.exists(abs_file_path):
                 self.logger.info(f"文件权限: {oct(os.stat(abs_file_path).st_mode)[-3:]}")
             raise
-        
-    def get_account_cookies(self, account_name):
-        account = self.accounts.get(account_name)
-        if account:
-            if self.is_expired(account.get('expiry_date')):
-                self.logger.info(f"账户 {account_name} 的 cookies 已过期，尝试刷新")
-                success = asyncio.get_event_loop().run_until_complete(self.refresh_account_cookies(account_name))
-                if success:
-                    return self.accounts[account_name].get('cookies', {})
-                return None
-            return account.get('cookies', {})
-        self.logger.info(f"未找到名为 {account_name} 的账户")
-        return None
-
-    def is_expired(self, expiry_date_str):
-        if not expiry_date_str:
-            return True
-        expiry_date = datetime.fromisoformat(expiry_date_str)
-        return datetime.now(timezone.utc) > expiry_date
 
     async def auto_login(self, account_name, password):
         driver = self.get_driver(account_name)
@@ -202,32 +182,49 @@ class AccountManager:
         """
         # 创建Chrome浏览器选项
         chrome_options = Options()
-        # 设置用户数据目录，以便每个账号有独立的浏览器配置
         chrome_options.add_argument(f"user-data-dir={os.path.join(self.user_data_dir, account_name)}")
-        # 最大化窗口
         chrome_options.add_argument("--start-maximized")
-        # 禁用扩展
         chrome_options.add_argument("--disable-extensions")
-        # 排除自动化控制的提示
         chrome_options.add_experimental_option('excludeSwitches', ['enable-automation'])
         
-        # 指定ChromeDriver的路径
-        chromedriver_path = "chromedriver-win64/chromedriver.exe"
-        # 创建ChromeDriver服务
-        service = Service(chromedriver_path)
-        # 创建Chrome浏览器驱动
-        driver = webdriver.Chrome(service=service, options=chrome_options)
+        # 获取可执行文件的基础路径
+        if getattr(sys, 'frozen', False):
+            # 如果是打包后的 exe
+            base_path = sys._MEIPASS
+        else:
+            # 如果是开发环境
+            base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         
-        # 使用stealth库来伪装浏览器，避免被检测为自动化工具
-        stealth(driver,
-            languages=["zh-CN", "zh"],  # 设置语言
-            vendor="Google Inc.",  # 设置浏览器厂商
-            platform="Win64",  # 设置平台
-            webgl_vendor="Intel Inc.",  # 设置WebGL厂商
-            renderer="Intel Iris OpenGL Engine",  # 设置渲染器
-            fix_hairline=True,  # 修复细线问题
-        )
-        return driver
+        # 指定ChromeDriver的路径
+        chromedriver_path = os.path.join(base_path, "chromedriver-win64", "chromedriver.exe")
+
+        # 检查文件是否存在
+        if not os.path.exists(chromedriver_path):
+            # 尝试在当前目录查找
+            current_dir = os.path.dirname(os.path.abspath(sys.executable if getattr(sys, 'frozen', False) else __file__))
+            alternative_path = os.path.join(current_dir, "chromedriver-win64", "chromedriver.exe")
+            
+            if os.path.exists(alternative_path):
+                chromedriver_path = alternative_path
+            else:
+                raise FileNotFoundError(f"找不到ChromeDriver，已尝试的路径:\n1. {chromedriver_path}\n2. {alternative_path}")
+        
+        try:
+            service = Service(executable_path=chromedriver_path)
+            driver = webdriver.Chrome(service=service, options=chrome_options)
+            
+            stealth(driver,
+                languages=["zh-CN", "zh"],
+                vendor="Google Inc.",
+                platform="Win64",
+                webgl_vendor="Intel Inc.",
+                renderer="Intel Iris OpenGL Engine",
+                fix_hairline=True,
+            )
+            return driver
+        except Exception as e:
+            self.logger.error(f"创建Chrome驱动时发生错误: {e}")
+            raise
 
     async def get_or_create_browser(self, account_name):
         return self.get_driver(account_name)
@@ -273,9 +270,30 @@ class AccountManager:
                 self.logger.error(f"添加或更新账号失败: {account_name}")
         return results
 
-    async def refresh_account_cookies(self, account_name, password, max_retries=3):
-        self.logger.info(f"尝试刷新账户 {account_name} 的 cookies")
+    async def refresh_account_cookies(self, account_name, password=None, max_retries=3):
+        """
+        刷新账户的cookies
         
+        Args:
+            account_name (str): 账户名称
+            password (str, optional): 账户密码。如果为None，则从accounts中获取
+            max_retries (int): 最大重试次数，默认为3
+        """
+        self.logger.info(f"尝试刷新账户 {account_name} 的 cookies")
+
+        # 如果没有传入密码，则从accounts中获取
+        if password is None:
+            password = self.accounts.get(account_name, {}).get('password')
+            if not password:
+                self.logger.error(f"无法获取账户 {account_name} 的密码")
+                return False
+
+        # 确保max_retries是整数
+        try:
+            max_retries = int(max_retries)
+        except (ValueError, TypeError):
+            max_retries = 3  # 如果转换失败，使用默认值
+
         for attempt in range(max_retries):
             new_cookies = await self.auto_login(account_name, password)
             if new_cookies:

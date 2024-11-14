@@ -1,2 +1,1 @@
-('C:\\Users\\Administrator\\Desktop\\拼多多AI客服--发行版\\build\\拼多多客服系统\\PYZ-00.pyz',
- [])
+('E:\\拼多多后台\\拼多多AI客服--测试\\build\\拼多多客服系统\\PYZ-00.pyz', [])

@@ -1,74 +1,72 @@
-import requests
-from datetime import datetime, timedelta
 from config import COZE_API_URL, coze_token, coze_bot_id
 from utils.logger import get_logger, get_log_queue
+from cozepy import Coze, TokenAuth
+from datetime import datetime, timedelta
+from utils.conversation import ConversationModel
+from utils.database import db, app
+import os
+
+coze = Coze(auth=TokenAuth(token=coze_token),base_url=COZE_API_URL)
 
 class CozeAPIHandler:
     def __init__(self):
-        self.chat_history = {}
-        self.chat_history_timestamps = {}
         self.logger = get_logger('coze_api')
         self.log_queue = get_log_queue()
+        self.expire_days = 180  # 设置过期时间为180天
+        
+        # 确保数据库文件所在目录存在
+        db_path = os.path.dirname(app.config['SQLALCHEMY_DATABASE_URI'].replace('sqlite:///', ''))
+        os.makedirs(db_path, exist_ok=True)
+        
+        # 初始化数据库
+        with app.app_context():
+            db.create_all()
     
     def generate_reply(self, recipient_uid, message_content, message_id, extra_info=None):
-        headers = {
-            "Authorization": f"Bearer {coze_token}",
-            "Content-Type": "application/json",
-            "Accept": "*/*",
-            "Host": "api.coze.cn",
-            "Connection": "keep-alive"
-        }
-
-        # 为每个用户维护单独的聊天历史
-        if recipient_uid not in self.chat_history:
-            self.chat_history[recipient_uid] = []
-            self.chat_history_timestamps[recipient_uid] = []
-
-        # 将新消息添加到用户的聊天历史
-        self.chat_history[recipient_uid].append({"role": "user", "content": message_content})
-        self.chat_history_timestamps[recipient_uid].append(datetime.now())
-
-        # 删除12小时前的聊天记录
-        self._clean_old_chat_history(recipient_uid)
-
-        # 构建查询字符串
-        query = message_content
-        if extra_info:
-            query += f", {extra_info}"
-
-        payload = {
-            "conversation_id": message_id,
-            "bot_id": coze_bot_id,
-            "user": recipient_uid,
-            "query": query,
-            "chat_history": self.chat_history[recipient_uid],
-            "stream": False
-        }
-
-        try:
-            response = requests.post(COZE_API_URL, headers=headers, json=payload)
-            response.raise_for_status()
-            response_data = response.json()
+        with app.app_context():
+            # 获取或创建对话ID
+            conversation = ConversationModel.query.filter_by(user_id=recipient_uid).first()
             
-            if 'messages' in response_data:
-                answer_messages = [msg for msg in response_data['messages'] if msg['type'] == 'answer']
-                if answer_messages:
-                    reply = answer_messages[0]['content']
-                    # 将AI回复添加到用户的聊天历史
-                    self.chat_history[recipient_uid].append({"role": "assistant", "content": reply})
-                    self.chat_history_timestamps[recipient_uid].append(datetime.now())
-                    return reply
+            # 检查是否存在有效的对话
+            if (conversation is None or 
+                conversation.timestamp < datetime.now() - timedelta(days=self.expire_days)):
+                
+                # 创建新的对话ID
+                conversation_id = coze.conversations.create()
+                
+                if conversation is None:
+                    # 新用户，创建新记录
+                    conversation = ConversationModel(
+                        user_id=recipient_uid,
+                        conversation_id=conversation_id.id
+                    )
+                    db.session.add(conversation)
                 else:
-                    return "抱歉，我暂时无法回答您的问题。请稍后再试或联系人工客服。"
+                    # 更新已过期的记录
+                    conversation.conversation_id = conversation_id.id
+                    conversation.timestamp = datetime.now()
+                
+                db.session.commit()
+                self.logger.info(f"新用户或对话已过期，创建对话ID: {conversation_id.id}")
             else:
-                return "抱歉，我暂时无法回答您的问题。请稍后再试或联系人工客服。"
-        
-        except Exception as e:
-            self.logger.info(f"调用Coze API时发生错误：{e}")
-            return "抱歉，我暂时无法回答您的问题。请稍后再试或联系人工客服。"
+                # 更新时间戳
+                conversation.timestamp = datetime.now()
+                db.session.commit()
+            message = coze.conversations.messages.create(
+                conversation_id=conversation.conversation_id,
+                content=message_content,
+                role="user",
+                content_type="text"
+            )
 
-    def _clean_old_chat_history(self, recipient_uid):
-        current_time = datetime.now()
-        while self.chat_history_timestamps[recipient_uid] and (current_time - self.chat_history_timestamps[recipient_uid][0]) > timedelta(hours=12):
-            self.chat_history[recipient_uid].pop(0)
-            self.chat_history_timestamps[recipient_uid].pop(0)
+            chat = coze.chat.create_and_poll(
+                conversation_id=message.conversation_id,
+                bot_id=coze_bot_id,
+                user_id=recipient_uid,
+                additional_messages=[message],
+                auto_save_history=True
+            )
+
+            for message in chat.messages:
+                if message.type.value == 'answer':
+                    return message.content
