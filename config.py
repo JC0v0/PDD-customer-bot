@@ -10,11 +10,6 @@ review_url = "https://mms.pinduoduo.com/saturn/reviews/list"
 reply_url = "https://mms.pinduoduo.com/saturn/review/reply/submit"
 
 # coze
-<<<<<<< HEAD
 coze_token = "pat_bU****************"
 coze_bot_id = "73943*********"
-=======
-coze_token = "pat_bUkBDAt*************************************"
-coze_bot_id = "7394***********************"
->>>>>>> 0ba73aea051b75506a273fbf610055e7afe23a07
 
