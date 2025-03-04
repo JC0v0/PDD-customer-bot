@@ -3,8 +3,8 @@ import logging
 import requests
 from typing import Dict, Any
 from config import set_csstatus_url
-from utils.logger import get_logger
-logger = get_logger('set_up_online')
+from utils.logger import get_logger, get_log_queue
+
 
 
 STATUS_MAP = {
@@ -23,16 +23,17 @@ class AccountMonitor:
     def __init__(self, file_path: str = 'config/account_cookies.json'):
         self.file_path = file_path
         self.accounts = self.load_accounts()
-
+        self.logger = get_logger('set_up_online')
+        
     def load_accounts(self) -> Dict[str, Any]:
         try:
             with open(self.file_path, 'r', encoding='utf-8') as f:
                 return json.load(f)
         except FileNotFoundError:
-            logger.error(f"账户文件 {self.file_path} 不存在")
+            self.logger.error(f"账户文件 {self.file_path} 不存在")
             return {}
         except json.JSONDecodeError:
-            logger.error(f"账户文件 {self.file_path} JSON 格式错误")
+            self.logger.error(f"账户文件 {self.file_path} JSON 格式错误")
             return {}
 
     @staticmethod
@@ -68,12 +69,12 @@ class AccountMonitor:
         except Exception as e:
             return {'success': False, 'error': str(e)}
     def batch_set_csstatus(self, status: str) -> None:
-        logger.info(f"开始为 {len(self.accounts)} 个账号批量设置状态...")
+        self.logger.info(f"开始为 {len(self.accounts)} 个账号批量设置状态...")
 
         for account_name, account_data in self.accounts.items():
             self.set_csstatus(account_name, account_data, status)
 
-        logger.info("批量设置状态完成")
+        self.logger.info("批量设置状态完成")
 
 def set_csstatus(account_name, account_data, status):
     return AccountMonitor.set_csstatus(account_name, account_data, status)

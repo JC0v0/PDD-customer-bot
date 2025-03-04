@@ -67,8 +67,6 @@ class AccountMonitor:
         for msg_data in messages:
             msg = Message.from_dict(msg_data)
             if not msg.status == 'read':
-                self.logger.info(f"收到来自用户 {msg.from_user.uid} 的新消息: {msg.content}")
-                
                 message_info = {
                     "账号": self.account_name,
                     "时间": msg.timestamp,
@@ -89,15 +87,21 @@ class AccountMonitor:
                 if msg.from_user.csid:
                     message_info["客服ID"] = msg.from_user.csid
                 
-                if msg.is_goods_card():
-                    message_info["商品信息"] = {
-                        "商品名称": msg.get_goods_name(),
-                        "商品价格": msg.get_goods_price(),
-                        "销售提示": msg.get_sales_tip(),
-                        "商品标签": ', '.join(tag['text'] for tag in msg.get_goods_tags()),
-                        "服务标签": ', '.join(msg.get_service_tags()),
-                        "商品ID": msg.get_goods_id()
-                    }
+                # 获取商品信息(如果存在)
+                info = msg.info
+                if info:
+                    good_info = {}
+                    if 'goodsName' in info:
+                        good_info["商品名称"] = info['goodsName']
+                    if 'tagList' in info:
+                        good_info["商品标签"] = ', '.join(tag['text'] for tag in info['tagList'])
+                    if 'serviceTags' in info and isinstance(info['serviceTags'], dict):
+                        good_info["服务标签"] = ', '.join(info['serviceTags'].get('tags', []))
+                    if 'spec' in info:
+                        good_info["商品规格"] = info['spec']
+                    
+                    if good_info:
+                        message_info["商品信息"] = good_info
                 
                 processed_messages.append(message_info)
         return processed_messages
@@ -145,21 +149,30 @@ class AccountMonitor:
             transfer_result = await asyncio.to_thread(self.conversation_transfer.auto_transfer_conversation, recipient_uid)
             reply = "您的请求已收到，正在为您转接人工客服，请稍候。" if transfer_result and transfer_result.get('success') else "抱歉，转接人工客服失败，请稍后再试。"
         else:
-            extra_info = None
+            # 准备发送给AI的完整内容
+            full_content = content
             if message.get('商品信息'):
                 extra_info = f"商品信息: {message['商品信息']}"
-            reply = await asyncio.to_thread(self.coze_api_handler.generate_reply, recipient_uid, content, message['消息ID'], extra_info)
+                full_content = f"{content}\n{extra_info}"  # 组合用户内容和商品信息
+                
+            reply = await asyncio.to_thread(self.coze_api_handler.generate_reply, recipient_uid, full_content)
 
         return reply
 
     async def process_and_reply(self, message):
+        # 准备发送给AI的完整内容
+        full_content = message['内容']
+        if message.get('商品信息'):
+            extra_info = f"商品信息: {message['商品信息']}"
+            full_content = f"{full_content}\n{extra_info}"
+
         reply_content = await self.auto_reply(message)
         recipient_uid = message['发送者'].split()[0]
         await asyncio.to_thread(self.send_customer_service_message, recipient_uid, reply_content)
         
-        # 修改这里，同时记录用户的问题和系统的回复
-        self.logger.info(f"用户 {recipient_uid} 的问题: {message['内容']}")
-        self.logger.info(f"系统回复给 {recipient_uid}: {reply_content}")
+        # 记录发送给AI的完整内容和系统的回复
+        self.logger.info(f"用户 {recipient_uid} 的问题: {full_content}")
+        self.logger.info(f"{self.account_name}回复给 {recipient_uid}: {reply_content}")
 
     async def monitor_and_reply(self, stop_event):
         self.logger.info(f"开始监控账号 {self.account_name}")

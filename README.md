@@ -23,36 +23,26 @@
    - 自动将对话转接给在线客服
 ![d35f6c048e394f89b32e6a6c56c4391](https://github.com/user-attachments/assets/ad770de9-f99d-4622-8f19-13845a699d6d)
 
-4. **评论管理**
-   - 获取指定日期范围内的商品评论
-   - 自动回复评论
-   - 支持自定义评论回复话术
-![image](https://github.com/user-attachments/assets/5c9a7bf7-7c0c-4d02-873a-5d6d8b097ed3)
-
-6. **关键词设置**
+4. **关键词设置**
    - 管理触发人工服务的关键词和正则表达式
 ![image](https://github.com/user-attachments/assets/a0fbac59-c724-4d5c-a320-c4bc53cf6605)
 
-7. **图形用户界面**
+5. **图形用户界面**
    - 使用tkinter构建的多标签页界面
    - 实时显示监控和操作日志
 
-8. **多线程处理**
+6. **多线程处理**
    - 使用线程池管理多个账号的并发监控
    - 后台处理不影响GUI响应
 
-9. **数据持久化**
+7. **数据持久化**
    - 将账号信息、cookies等数据保存到JSON文件
    - 将评论数据导出到CSV文件
 
-10. **安全性考虑**
-    - 使用selenium-stealth避免被检测为自动化工具
-    - 管理cookies有效期,定期刷新
 
 ## 系统要求
-
 - Python 3.7+
-- Chrome浏览器 (用于Selenium自动化)
+- playwright
 
 ## 安装步骤
 
@@ -68,23 +58,26 @@ cd pdd-customer-service
 ```
 pip install -r requirements.txt
 ```
-4. 下载与您Chrome浏览器版本匹配的ChromeDriver,并将其放置在`chromedriver-win64`目录下。
+4. 下载playwright chrome浏览器
+```
+playwright install chrome
+```
 
 ## 使用方法
 
 1. 运行主程序
-   运行 ‘拼多多客服系统.exe’或者命令行输入：
+   运行 ‘拼多多客服系统.exe’或者 命令行输入：
 ```
 python main.py
 ```
 
-3. 在图形界面中添加您的拼多多商家账号。
+2. 在图形界面中添加您的拼多多商家账号。
 
-4. 设置自动回复关键词和评论回复话术。
+3. 设置自动回复关键词和评论回复话术。
 
-5. 开始监控消息和管理评论。
+4. 开始监控消息和管理评论。
 
-6. 在config.py文件中设置你的Coze API
+5. 在config.py文件中设置你的Coze API
 ```
 coze_token = "pat_bUk***************"
 coze_bot_id = "73*************"

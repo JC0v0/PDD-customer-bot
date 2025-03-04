@@ -18,3 +18,4 @@ concurrent.futures  # Python 3.2+已包含,不需要单独安装
 flask  # Python 3.2+已包含,不需要单独安装
 flask-sqlalchemy  # Python 3.2+已包含,不需要单独安装
 sqlalchemy  # Python 3.2+已包含,不需要单独安装
+playwright 

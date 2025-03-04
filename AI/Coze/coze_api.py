@@ -22,7 +22,7 @@ class CozeAPIHandler:
         with app.app_context():
             db.create_all()
     
-    def generate_reply(self, recipient_uid, message_content, message_id, extra_info=None):
+    def generate_reply(self, recipient_uid, message_content):
         with app.app_context():
             # 获取或创建对话ID
             conversation = ConversationModel.query.filter_by(user_id=recipient_uid).first()
