@@ -66,7 +66,7 @@ playwright install chrome
 ## 使用方法
 
 1. 运行主程序
-   运行 ‘拼多多客服系统.exe’或者 命令行输入：
+   运行 ‘拼多多客服系统.bat’或者 命令行输入：
 ```
 python main.py
 ```

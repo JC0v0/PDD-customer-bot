@@ -1,47 +1,26 @@
-import tkinter as tk
-from tkinter import ttk
-from gui.account_manager_gui import AccountManagerGUI
-from gui.monitor_gui import MonitorGUI
-from gui.keyword_manager_gui import KeywordManagerGUI
-from utils.icon_loader import IconLoader
-from utils.logger import get_logger, get_log_queue
-from PDD.account_manager import AccountManager
-
-class PinduoduoCustomerServiceGUI:
-    def __init__(self, master):
-        self.master = master
-        master.title("拼多多客服系统")
-        master.geometry("1200x800")
-
-        self.logger = get_logger('main')
-        self.log_queue = get_log_queue()
-        self.account_manager = AccountManager()
-        self.icon_loader = IconLoader()
-
-        self.setup_styles()
-        self.create_notebook()
-        self.create_gui_components()
-
-    def setup_styles(self):
-        self.style = ttk.Style()
-        self.style.theme_use('clam')
-
-    def create_notebook(self):
-        self.notebook = ttk.Notebook(self.master, style='TNotebook')
-        self.notebook.pack(expand=True, fill="both", padx=20, pady=20)
-
-    def create_gui_components(self):
-        self.account_manager_gui = AccountManagerGUI(self.notebook, self.account_manager, self.icon_loader, self.logger)
-        self.monitor_gui = MonitorGUI(self.notebook, self.logger, self.log_queue)  # 修改这行，传递 self.log_queue
-        self.keyword_manager_gui = KeywordManagerGUI(self.notebook, self.logger)
+import sys
+from PyQt6.QtWidgets import QApplication
+from gui.views.main_window import MainWindow
+from qfluentwidgets import FluentTranslator
+from PyQt6.QtGui import QIcon
 
 
-        self.notebook.add(self.account_manager_gui.frame, text="账号管理")
-        self.notebook.add(self.monitor_gui.frame, text="消息监控")
-        self.notebook.add(self.keyword_manager_gui.frame, text="关键词设置")
+def main():
+    # 创建应用程序实例
+    app = QApplication(sys.argv)
+    
+    # 设置中文翻译
+    translator = FluentTranslator()
+    app.installTranslator(translator)
+    
+    # 创建并显示主窗口
+    window = MainWindow()
+    window.setWindowIcon(QIcon("icon/图标智能客服.ico"))
+    window.show()
+    
+    # 运行应用程序
+    sys.exit(app.exec())
 
 
-if __name__ == "__main__":
-    root = tk.Tk()
-    app = PinduoduoCustomerServiceGUI(root)
-    root.mainloop()
+if __name__ == '__main__':
+    main()

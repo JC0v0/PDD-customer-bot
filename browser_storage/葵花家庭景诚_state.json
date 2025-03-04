@@ -1,0 +1,213 @@
+{
+  "cookies": [
+    {
+      "name": "webp",
+      "value": "true",
+      "domain": "mms.pinduoduo.com",
+      "path": "/login",
+      "expires": 1743674720,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "api_uid",
+      "value": "CiSFK2fG0FFejABh6l+bAg==",
+      "domain": ".pinduoduo.com",
+      "path": "/",
+      "expires": 1775642720.337071,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_nano_fp",
+      "value": "XpmYXp9JX5mxX0TqXC_ZhFN7MTMrsAjKSqtg9d7X",
+      "domain": "mms.pinduoduo.com",
+      "path": "/",
+      "expires": 1775642720.483016,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "rckk",
+      "value": "AcJ8Rqu2FVbwI2B23BoQTWBcwyxA2KEP",
+      "domain": ".pinduoduo.com",
+      "path": "/",
+      "expires": 1772618721.444916,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_bee",
+      "value": "AcJ8Rqu2FVbwI2B23BoQTWBcwyxA2KEP",
+      "domain": ".pinduoduo.com",
+      "path": "/",
+      "expires": 1772618721.445012,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "ru1k",
+      "value": "b97013cb-391d-4e59-9902-afde72f7ab36",
+      "domain": ".pinduoduo.com",
+      "path": "/",
+      "expires": 1772618721.445062,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_f77",
+      "value": "b97013cb-391d-4e59-9902-afde72f7ab36",
+      "domain": ".pinduoduo.com",
+      "path": "/",
+      "expires": 1772618721.445077,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "ru2k",
+      "value": "f93350cb-7aa2-4694-a380-9f8d9cb35c78",
+      "domain": ".pinduoduo.com",
+      "path": "/",
+      "expires": 1772618721.44509,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_a42",
+      "value": "f93350cb-7aa2-4694-a380-9f8d9cb35c78",
+      "domain": ".pinduoduo.com",
+      "path": "/",
+      "expires": 1772618721.445103,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "PASS_ID",
+      "value": "1-ufY+EVQFA5ly1eKCEr0DkWczDXVgnkhBAcmpHJbBBH4Pb3xGupzJkl+3BejOb6H/2ue17u2S/YedvDAiToxxrQ_206820704_149438930",
+      "domain": "mms.pinduoduo.com",
+      "path": "/",
+      "expires": 1741946721.505747,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "JSESSIONID",
+      "value": "6F9657ECED35695F30E3065E449F379D",
+      "domain": "mms.pinduoduo.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "webp",
+      "value": "true",
+      "domain": "mms.pinduoduo.com",
+      "path": "/",
+      "expires": 1743674722,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "x-visit-time",
+      "value": "1741082722387",
+      "domain": "mms.pinduoduo.com",
+      "path": "/",
+      "expires": 1749722722.387329,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": [
+    {
+      "origin": "https://mms.pinduoduo.com",
+      "localStorage": [
+        {
+          "name": "PREURL",
+          "value": "{\"url\":\"login\"}"
+        },
+        {
+          "name": "old_username",
+          "value": "{\"username\":\"葵花家庭景诚\"}"
+        },
+        {
+          "name": "226_3_36_102_105_110_103_101_114_45_117_117_105_100_49_95_48_46_49_46_53",
+          "value": "226_3_72_98_57_55_48_49_51_99_98_45_51_57_49_100_45_52_101_53_57_45_57_57_48_50_45_97_102_100_101_55_50_102_55_97_98_51_54"
+        },
+        {
+          "name": "mms.pmm.did.2",
+          "value": "12ee6e6b-618b-48e9-a37d-018197e331e9"
+        },
+        {
+          "name": "MALLSTATUS_",
+          "value": "4"
+        },
+        {
+          "name": "MMS_NAV",
+          "value": "{\"groups\":[{\"id\":3595,\"name\":\"推荐\",\"icon\":\"https://promotion.pddpic.com/promo/icon/pic/c4aa715d-94d2-486f-92ca-86c36d1957ec.png.slim.png\",\"children\":[{\"id\":3596,\"url\":\"/mallcenter/temu/semi\",\"name\":\"TEMU入驻\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":false,\"activeList\":[],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false},{\"id\":3646,\"url\":\"/ddmc-supplier-product/mms-goods\",\"name\":\"买菜售卖报名\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":false,\"activeList\":[],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false}]},{\"id\":100,\"name\":\"发货管理\",\"icon\":\"https://commimg.pddpic.com/mms_static/2019-11-15/e28bf79a-91ca-4101-94d7-c598ffd0f523.png\",\"children\":[{\"id\":101,\"url\":\"/orders/list\",\"name\":\"订单查询\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":false,\"activeList\":[\"/orders/search/index\",\"/orders/wechat/push\",\"/orders/list\"],\"defaultVisibility\":false,\"whitelist\":\"\",\"active\":false},{\"id\":120,\"url\":\"/print/home\",\"name\":\"打单工具\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":true,\"activeList\":[\"^/print/*\"],\"defaultVisibility\":false,\"whitelist\":\"\",\"active\":false},{\"id\":105,\"url\":\"/express/package\",\"name\":\"包裹中心\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":false,\"activeList\":[\"/orders/order/packageCenter\",\"/express/package\"],\"defaultVisibility\":false,\"whitelist\":\"\",\"active\":false},{\"id\":102,\"url\":\"/express/batch\",\"name\":\"发货中心\",\"isNotifyClicked\":true,\"isOpenInNewWindow\":false,\"activeList\":[\"/express/complain\",\"/express/reminder\",\"^/express/(?!(package|store|24h-delivery|merge|return_freight|intercept|ddmc_distribution/*))\"],\"defaultVisibility\":false,\"whitelist\":\"\",\"active\":false},{\"id\":809,\"url\":\"/invoice/center\",\"name\":\"订单开票\",\"isNotifyClicked\":true,\"isOpenInNewWindow\":false,\"activeList\":[\"^/invoice\"],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false},{\"id\":103,\"url\":\"/orders/order/carriage/list\",\"name\":\"物流工具\",\"isNotifyClicked\":true,\"isOpenInNewWindow\":false,\"activeList\":[\"/orders/order/carriage/list\",\"/orders/carriage/edit\",\"/orders/carriage/detail\",\"/orders/delivery_address_management\",\"/order/carriage\",\"/order/sendInstall\",\"/orders/order/sfCarriage/goodList\",\"/orders/scheduledDeliverySettings\",\"/orders/scheduledDeliverySettings/template/create\"],\"defaultVisibility\":false,\"whitelist\":\"\",\"active\":false},{\"id\":107,\"url\":\"/logistics/home\",\"name\":\"电子面单\",\"isNotifyClicked\":true,\"isOpenInNewWindow\":false,\"activeList\":[\"^/logistics/(?!deliver-manage)\",\"^/logistics/?$\"],\"defaultVisibility\":false,\"whitelist\":\"\",\"active\":false},{\"id\":104,\"url\":\"/orders/order/logisticsSurvey\",\"name\":\"物流概况\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":false,\"activeList\":[\"/orders/order/logisticsSurvey\"],\"defaultVisibility\":false,\"whitelist\":\"\",\"active\":false},{\"id\":3464,\"url\":\"/orders/reportManage\",\"name\":\"报备额度\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":false,\"activeList\":[],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false},{\"id\":3561,\"url\":\"/orders/warnCenter?warnType=6\",\"name\":\"大额订单\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":false,\"activeList\":[\"/orders/warnCenter?warnType=6\"],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false}]},{\"id\":200,\"name\":\"售后管理\",\"icon\":\"https://commimg.pddpic.com/mms_static/2019-11-15/f08bfc37-4ec9-4a94-8cee-4f12ce1e3041.png\",\"children\":[{\"id\":211,\"url\":\"/aftersales/aftersale_list\",\"name\":\"售后工作台\",\"isNotifyClicked\":true,\"isOpenInNewWindow\":false,\"activeList\":[\"^/aftersales/aftersale_auto/*\",\"/aftersales/setup\"],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false},{\"id\":204,\"url\":\"/aftersales/work_order/list\",\"name\":\"工单管理\",\"isNotifyClicked\":true,\"isOpenInNewWindow\":false,\"activeList\":[\"/aftersales/work_order\"],\"defaultVisibility\":false,\"whitelist\":\"\",\"active\":false},{\"id\":210,\"url\":\"/aftersales/merchant_appeal\",\"name\":\"商家举证\",\"isNotifyClicked\":true,\"isOpenInNewWindow\":false,\"activeList\":[],\"defaultVisibility\":false,\"whitelist\":\"\",\"active\":false},{\"id\":3521,\"url\":\"/freight/return_freight?chanel=1033\",\"name\":\"消费者体验\",\"isNotifyClicked\":true,\"isOpenInNewWindow\":false,\"activeList\":[\"/freight/return_freight\"],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false},{\"id\":208,\"url\":\"/aftersales/speed_refund\",\"name\":\"极速退款\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":false,\"activeList\":[\"/aftersales/speed_refund\"],\"defaultVisibility\":false,\"whitelist\":\"\",\"active\":false},{\"id\":205,\"url\":\"/aftersales/micro_transfer\",\"name\":\"小额打款\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":false,\"activeList\":[\"/orders/aftersale/micro_transfer\",\"/aftersales/micro_transfer\"],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false}]},{\"id\":300,\"name\":\"商品管理\",\"icon\":\"https://commimg.pddpic.com/mms_static/2019-11-15/24c8b43e-37b1-4967-bdec-d6aabfaf3935.png\",\"children\":[{\"id\":302,\"url\":\"/goods/goods_list\",\"name\":\"商品列表\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":false,\"activeList\":[\"/goods/goods_list$\",\"/goods/goods_draft\",\"/goods/goods_recycle\",\"/goods/goods_record\",\"/goods/goods_list/change_goods_sku\",\"/goods/goods_list/virtual_detail\",\"/goods/goods_detail*\",\"/goods/goods_return_detail*\",\"/goods/violation_list\",\"/goods/violation_detail*\",\"/goods/goods_list/change_sku_record\"],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false},{\"id\":304,\"url\":\"/goods/evaluation/index\",\"name\":\"评价管理\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":false,\"activeList\":[\"^/goods/evaluation/*\"],\"defaultVisibility\":false,\"whitelist\":\"\",\"active\":false},{\"id\":301,\"url\":\"/goods/category\",\"name\":\"发布新商品\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":true,\"activeList\":[\"/goods/category\",\"/goods/goods_add/index\",\"/goods/goods_add/success\"],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false},{\"id\":306,\"url\":\"/search/good_inspect_v2/inspect_start\",\"name\":\"商品体检\",\"isNotifyClicked\":true,\"isOpenInNewWindow\":false,\"activeList\":[\"^/search/*\"],\"defaultVisibility\":false,\"whitelist\":\"\",\"active\":false},{\"id\":308,\"url\":\"/goods/goods_materials\",\"name\":\"商品素材\",\"isNotifyClicked\":true,\"isOpenInNewWindow\":false,\"activeList\":[\"/goods/goods_materials/*\"],\"defaultVisibility\":false,\"whitelist\":\"\",\"active\":false},{\"id\":325,\"url\":\"/goods-tool/home\",\"name\":\"商品工具\",\"isNotifyClicked\":true,\"isOpenInNewWindow\":false,\"activeList\":[\"/goods-tool/recommend\",\"/goods-tool/question/guide\",\"/goods-tool/remote-delivery\",\"/goods-tool/presale/list\",\"/goods-tool/freebie\",\"/goods/tools/ai\",\"/goods-tool/batch-delivery/list\",\"/mallcenter/salesInherit/step1\",\"/goods-tool/group-sale\",\"/mallcenter/dataCollection\",\"/chat-service/catalog\",\"/goods-tool/expert-experience\",\"/mallcenter/stockTaking/center\",\"/pg/mall_quality\",\"/tool/goods-tool/earnest\"],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false},{\"id\":3534,\"url\":\"/goods/goods_list/chance\",\"name\":\"机会商品\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":true,\"activeList\":[],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false},{\"id\":3389,\"url\":\"/supplier\",\"name\":\"供货管理\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":false,\"activeList\":[],\"defaultVisibility\":false,\"whitelist\":\"\",\"active\":false}]},{\"id\":700,\"name\":\"推广平台\",\"icon\":\"https://commimg.pddpic.com/mms_static/2019-11-15/a56c77f8-1952-44b6-9996-a3d31ea6b361.png\",\"children\":[{\"id\":702,\"url\":\"https://yingxiao.pinduoduo.com/mains/promotionOverview\",\"name\":\"推广概况\",\"isNotifyClicked\":true,\"isOpenInNewWindow\":true,\"activeList\":[\"^/exp/pro/index\",\"^/exp/messageCenter/\",\"^/exp/discountReport\",\"^/adgroup/\",\"^/extension/recharge_record\",\"^/extension/operation_record\"],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false},{\"id\":3587,\"url\":\"https://yingxiao.pinduoduo.com/goods/promotion/list\",\"name\":\"商品推广\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":true,\"activeList\":[],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false},{\"id\":3511,\"url\":\"https://yingxiao.pinduoduo.com/live/list\",\"name\":\"直播推广\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":true,\"activeList\":[],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false},{\"id\":3514,\"url\":\"https://yingxiao.pinduoduo.com/starmall/list\",\"name\":\"明星店铺\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":true,\"activeList\":[],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false},{\"id\":708,\"url\":\"https://yingxiao.pinduoduo.com/goods/report/promotion/overView\",\"name\":\"推广报表\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":true,\"activeList\":[\"^/exp/reportOverview/index/search\",\"^/exp/reportOverview/index/scene\",\"^/exp/reportOverview/unit/\",\"^/exp/reportOverview/plan/\",\"^/exp/reportOverview/detail/\",\"^/exp/reportOverview/dayDetail\"],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false},{\"id\":3515,\"url\":\"https://yingxiao.pinduoduo.com/tools/index\",\"name\":\"推广工具\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":true,\"activeList\":[],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false},{\"id\":3516,\"url\":\"https://yingxiao.pinduoduo.com/mains/account/finance\",\"name\":\"推广账户\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":true,\"activeList\":[],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false},{\"id\":3512,\"url\":\"https://shuyuan.pinduoduo.com/\",\"name\":\"营销书院\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":true,\"activeList\":[],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false}]},{\"id\":1000,\"name\":\"数据中心\",\"icon\":\"https://commimg.pddpic.com/mms_static/2019-11-15/e3b5368b-775c-43ee-8337-d537b7386318.png\",\"children\":[{\"id\":1001,\"url\":\"/sycm/goods_effect\",\"name\":\"商品数据\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":false,\"activeList\":[\"^/sycm/goods_effect*\"],\"defaultVisibility\":false,\"whitelist\":\"\",\"active\":false},{\"id\":1002,\"url\":\"/sycm/stores_data\",\"name\":\"交易数据\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":false,\"activeList\":[\"^/sycm/stores_data*\"],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false},{\"id\":1003,\"url\":\"/sycm/goods_quality/jump\",\"name\":\"服务数据\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":false,\"activeList\":[\"^/sycm/goods_quality*\"],\"defaultVisibility\":false,\"whitelist\":\"\",\"active\":false},{\"id\":3343,\"url\":\"/sycm/evaluation\",\"name\":\"经营总览\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":false,\"activeList\":[\"^/sycm/evaluation*\"],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false},{\"id\":1004,\"url\":\"/sycm/search_data\",\"name\":\"流量数据\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":false,\"activeList\":[\"^/sycm/search_data*\"],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false}]},{\"id\":600,\"name\":\"店铺营销\",\"icon\":\"https://commimg.pddpic.com/mms_static/2019-11-15/7b42dd53-b101-4b7b-aba8-99544c19e2e4.png\",\"children\":[{\"id\":601,\"url\":\"/act/index?SourceType=MMSActicon\",\"name\":\"营销活动\",\"isNotifyClicked\":true,\"isOpenInNewWindow\":false,\"activeList\":[\"/activity/resource/promotion_activity\",\"/activity/resource/entry\",\"/activity/resource/activity_detail/\",\"/activity/resource/attended_list\",\"/activity/resource_niche/apply/index\",\"/act/index\",\"/act/detail\",\"/act/sign_detail\",\"/act/my_join_activity\",\"/act/register_record\"],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false},{\"id\":604,\"url\":\"/tool\",\"name\":\"营销工具\",\"isNotifyClicked\":true,\"isOpenInNewWindow\":false,\"activeList\":[\"^\\\\/tool(?!\\\\/(sms|pricebreak|promotion\\\\/*))\",\"^\\\\/kit(?!\\\\/(main-image|brand-price-change|high-prices-limit-rate|shop-service|new|price-insurance|goods-price-management|goods-price-change\\\\/*))\"],\"defaultVisibility\":false,\"whitelist\":\"\",\"active\":false},{\"id\":602,\"url\":\"/act-bidding/home\",\"name\":\"爆款竞价\",\"isNotifyClicked\":true,\"isOpenInNewWindow\":false,\"activeList\":[\"/act-bidding/my-bidding-list\",\"/act-bidding/sign-detail\"],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false},{\"id\":3487,\"url\":\"https://live.pinduoduo.com/creator/index?from=mms\",\"name\":\"多多视频\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":true,\"activeList\":[],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false},{\"id\":3530,\"url\":\"/kit/new?tool_full_channel=10323_97807\",\"name\":\"新客立减\",\"isNotifyClicked\":true,\"isOpenInNewWindow\":false,\"activeList\":[\"/kit/new\"],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false},{\"id\":3524,\"url\":\"/act-bidding/market-bid-home\",\"name\":\"营销竞价\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":false,\"activeList\":[\"/act-bidding/market-bid-home\",\"/act-bidding/market-sign\"],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false},{\"id\":610,\"url\":\"https://live.pinduoduo.com/n-creator/live/home?from=mms\",\"name\":\"多多直播\",\"isNotifyClicked\":true,\"isOpenInNewWindow\":true,\"activeList\":[],\"defaultVisibility\":false,\"whitelist\":\"\",\"active\":false},{\"id\":606,\"url\":\"/act-bidding/platform-purchase/home\",\"name\":\"平台招标\",\"isNotifyClicked\":true,\"isOpenInNewWindow\":false,\"activeList\":[\"^/act/act_call_bidding/*\"],\"defaultVisibility\":false,\"whitelist\":\"\",\"active\":false},{\"id\":3542,\"url\":\"/tool/sms\",\"name\":\"短信营销\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":false,\"activeList\":[\"^/tool/sms/*\"],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false}]},{\"id\":3635,\"name\":\"商家权益保护\",\"icon\":\"https://promotion.pddpic.com/promo/mms/f652aeb6-e60b-451f-b92f-46e44dae3cf9.png.slim.png\",\"children\":[{\"id\":3636,\"url\":\"/other/rule\",\"name\":\"规则更新\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":true,\"activeList\":[],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false},{\"id\":3637,\"url\":\"/kit/goods-price-management?lowPriceFilter=true\",\"name\":\"低价预警\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":false,\"activeList\":[],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false},{\"id\":3638,\"url\":\"/orders/appeals/badOrder\",\"name\":\"异常单申诉\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":false,\"activeList\":[],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false},{\"id\":3639,\"url\":\"/orders/appeals/aftersale/order\",\"name\":\"售后申诉\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":false,\"activeList\":[],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false},{\"id\":3640,\"url\":\"/goods/evaluation/index?sellerRightProtect=1\",\"name\":\"评价举报\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":false,\"activeList\":[],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false},{\"id\":3641,\"url\":\"https://ipp.pinduoduo.com\",\"name\":\"知识产权保护\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":true,\"activeList\":[],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false},{\"id\":3643,\"url\":\"/pg/feedback\",\"name\":\"意见反馈\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":false,\"activeList\":[],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false}]},{\"id\":400,\"name\":\"账户资金\",\"icon\":\"https://commimg.pddpic.com/mms_static/2019-11-15/95b94fb8-77ec-4ac3-adef-8d3f29fdd1d0.png\",\"children\":[{\"id\":405,\"url\":\"/pg/deduciton_detail/record\",\"name\":\"消费者补偿明细\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":false,\"activeList\":[\"/FundManagement/Chargebacks/withhold\",\"/FundManagement/Chargebacks/shipping\",\"/pg/deduciton_detail/stock\"],\"defaultVisibility\":false,\"whitelist\":\"\",\"active\":false},{\"id\":406,\"url\":\"/pg/restrict_list\",\"name\":\"资金限制\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":false,\"activeList\":[\"/mall/restrict_money\",\"/mall/restrict_detail\",\"/pg/restrict_list\",\"/pg/restrict_detail\"],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false}]},{\"id\":800,\"name\":\"店铺管理\",\"icon\":\"https://commimg.pddpic.com/mms_static/2019-11-15/a0b6afda-b18c-4bf9-b4c3-f48a3396ff36.png\",\"children\":[{\"id\":805,\"url\":\"/pg/violation_list\",\"name\":\"违规信息\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":false,\"activeList\":[\"/mall/violation_info/violation\",\"/mall/complain_result\",\"/mall/violation_complain\",\"/pg/violation_list\",\"/pg/violation_info\"],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false},{\"id\":807,\"url\":\"/orders/appeals\",\"name\":\"订单申诉\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":false,\"activeList\":[\"/orders/appeals/*\"],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false},{\"id\":806,\"url\":\"/mallcenter/close/index\",\"name\":\"退店\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":false,\"activeList\":[\"/mallcenter/close\"],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false},{\"id\":801,\"url\":\"/mallcenter/mallinfo\",\"name\":\"店铺信息\",\"isNotifyClicked\":true,\"isOpenInNewWindow\":false,\"activeList\":[\"^/mallcenter/info/(?!(createNewMall/*))\",\"^/mallcenter/mallinfo\"],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false},{\"id\":808,\"url\":\"/material/upload\",\"name\":\"图片空间\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":true,\"activeList\":[\"/material\"],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false},{\"id\":802,\"url\":\"/mallcenter/sub/account\",\"name\":\"子账号管理\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":false,\"activeList\":[\"/mallcenter/sub\"],\"defaultVisibility\":false,\"whitelist\":\"\",\"active\":false},{\"id\":3573,\"url\":\"/decoration/home\",\"name\":\"店铺装修\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":false,\"activeList\":[\"/decoration/home*\",\"/decoration/topic*\",\"/decoration/guide\"],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false},{\"id\":3577,\"url\":\"/goods/goods_categories_home\",\"name\":\"店铺页设置\",\"isNotifyClicked\":true,\"isOpenInNewWindow\":false,\"activeList\":[\"/decoration/notification\",\"/goods/up\"],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false},{\"id\":3540,\"url\":\"/orders/warnCenter\",\"name\":\"预警中心\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":false,\"activeList\":[],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false},{\"id\":3549,\"url\":\"/orders/dataRiskWarn\",\"name\":\"安全风险\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":false,\"activeList\":[\"/orders/dataRiskWarn\"],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false}]},{\"id\":500,\"name\":\"多多客服\",\"icon\":\"https://commimg.pddpic.com/mms_static/2019-11-15/fb5d7709-f9f3-4e9f-acfb-69d918868549.png\",\"children\":[{\"id\":503,\"url\":\"/mms-chat/overview\",\"name\":\"客服数据\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":false,\"activeList\":[\"/mms-chat/overview/store\",\"/mms-chat/overview/merchant\",\"/mms-chat/overview/robot\"],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false},{\"id\":502,\"url\":\"/chat-service/status\",\"name\":\"实时管理\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":false,\"activeList\":[\"^/chat-service/status\",\"^/Pdd.html#/chats/status/index\"],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false},{\"id\":505,\"url\":\"/mms-chat/tools\",\"name\":\"客服工具\",\"isNotifyClicked\":true,\"isOpenInNewWindow\":false,\"activeList\":[],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false},{\"id\":501,\"url\":\"/mms-chat/search\",\"name\":\"聊天记录\",\"isNotifyClicked\":true,\"isOpenInNewWindow\":false,\"activeList\":[\"^/chat-service/search\",\"^/Pdd.html#/chats/search/index\",\"^/mms-chat/search\"],\"defaultVisibility\":false,\"whitelist\":\"\",\"active\":false},{\"id\":504,\"url\":\"/chat-service/setting\",\"name\":\"消息设置\",\"isNotifyClicked\":true,\"isOpenInNewWindow\":false,\"activeList\":[\"^/chat-service/setting\",\"^/Pdd.html#/chats/settings/index\"],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false},{\"id\":3384,\"url\":\"/chat-service/robot\",\"name\":\"客服机器人\",\"isNotifyClicked\":true,\"isOpenInNewWindow\":true,\"activeList\":[],\"defaultVisibility\":false,\"whitelist\":\"\",\"active\":false},{\"id\":508,\"url\":\"/mms-chat/service/promise\",\"name\":\"服务助手\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":false,\"activeList\":[],\"defaultVisibility\":false,\"whitelist\":\"\",\"active\":false}]},{\"id\":3396,\"name\":\"采购管理\",\"icon\":\"https://commimg.pddpic.com/galerie-go/static/2020-07-22/95fe62f4-df95-438d-a787-bcc7b0afe5e1.png\",\"children\":[{\"id\":3397,\"url\":\"https://pifa.pinduoduo.com/?forceLogin=true&sn=84134\",\"name\":\"批发采购\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":true,\"activeList\":[],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false},{\"id\":3420,\"url\":\"https://pifa.pinduoduo.com/order/?forceLogin=true&sn=84134\",\"name\":\"采购订单\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":true,\"activeList\":[],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false}]},{\"id\":1300,\"name\":\"品牌管理\",\"icon\":\"https://commimg.pddpic.com/mms_static/2019-11-15/b61dd2ec-e9d8-41eb-971a-35957520e6ca.png\",\"children\":[{\"id\":1302,\"url\":\"/brand/applet/\",\"name\":\"拼内购\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":false,\"activeList\":[\"^/brand/applet/*\"],\"defaultVisibility\":false,\"whitelist\":\"\",\"active\":false}]},{\"id\":3562,\"name\":\"成长中心\",\"icon\":\"https://funimg.pddpic.com/mms/1db572c3-182c-4063-a390-a2fb4c867edf.png.slim.png\",\"children\":[{\"id\":3563,\"url\":\"/other/rule\",\"name\":\"规则中心\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":true,\"activeList\":[],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false},{\"id\":3564,\"url\":\"/daxue/home\",\"name\":\"拼多多课堂\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":true,\"activeList\":[],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false},{\"id\":3565,\"url\":\"https://shuyuan.pinduoduo.com/\",\"name\":\"营销书院\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":true,\"activeList\":[],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false},{\"id\":3567,\"url\":\"/other/helpcenter/\",\"name\":\"帮助中心\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":true,\"activeList\":[],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false},{\"id\":3568,\"url\":\"/mallcenter/medal\",\"name\":\"勋章馆\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":false,\"activeList\":[],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false},{\"id\":3569,\"url\":\"/mallcenter/ability/index\",\"name\":\"能力认证\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":false,\"activeList\":[],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false}]},{\"id\":900,\"name\":\"商家服务市场\",\"icon\":\"https://commimg.pddpic.com/mms_static/2019-11-15/e3967a00-fe52-4313-8939-9270aa8b2f44.png\",\"children\":[{\"id\":915,\"url\":\"https://fuwu.pinduoduo.com/service-market/my-service\",\"name\":\"我的服务\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":true,\"activeList\":[],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false},{\"id\":916,\"url\":\"https://fuwu.pinduoduo.com/service-market/my-auth\",\"name\":\"我的授权\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":true,\"activeList\":[],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false},{\"id\":901,\"url\":\"https://fuwu.pinduoduo.com/service-market/\",\"name\":\"服务市场\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":true,\"activeList\":[],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false},{\"id\":914,\"url\":\"https://fuwu.pinduoduo.com/service-market/evaluation-manage\",\"name\":\"服务评价\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":true,\"activeList\":[],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false},{\"id\":913,\"url\":\"https://fuwu.pinduoduo.com/service-market/order-list\",\"name\":\"服务订单\",\"isNotifyClicked\":false,\"isOpenInNewWindow\":true,\"activeList\":[\"/service-market/order-detail\"],\"defaultVisibility\":true,\"whitelist\":\"\",\"active\":false}]}],\"home\":{\"id\":0,\"name\":\"后台首页\",\"url\":\"/home/\",\"activeList\":[\"^/index\",\"^/home\"],\"active\":true}}"
+        },
+        {
+          "name": "MMS_NAV_FAV",
+          "value": "[301,101,211,703]"
+        },
+        {
+          "name": "PROTOCOL_MODAL",
+          "value": "undefined"
+        },
+        {
+          "name": "226_3_32_102_105_110_103_101_114_45_107_101_121_95_48_46_49_46_53",
+          "value": "226_3_64_65_99_74_56_82_113_117_50_70_86_98_119_73_50_66_50_51_66_111_81_84_87_66_99_119_121_120_65_50_75_69_80"
+        },
+        {
+          "name": "new_userinfo",
+          "value": "{\"id\":149438930,\"username\":\"葵花家庭景诚\",\"mobile\":\"172****0192\",\"nickname\":\"\",\"mallOwner\":false,\"roleId\":1,\"isBindWeChat\":false,\"forceMobileVerify\":false,\"mallVerify\":true,\"mallInfoAuthority\":true,\"conjoinedUserId\":null,\"mall_id\":206820704,\"password_status\":1,\"server_time\":1741082706,\"created_at\":\"2024-06-03 09:48:56\",\"updated_at\":\"2024-09-10 10:58:48\",\"mall\":{\"mall_id\":206820704,\"mall_name\":\"葵花家庭清洁官方旗舰店\",\"mall_desc\":\"葵花品牌，用心呵护，保证正品，放心购买哦！！！\",\"company_phone\":\"\",\"merchant_type\":3,\"mall_type\":4,\"source_type\":0,\"oversea_type\":0,\"is_open\":1,\"staple_id\":\"4\",\"logo\":\"https://img.pddpic.com/goods_mms/2024-06-15/8d37b9fd-2b95-431d-a597-0e05a6ca2503.jpeg.a.jpeg\",\"status\":2,\"staple\":[\"家居生活\"],\"apply_close\":0}}"
+        },
+        {
+          "name": "msfe.auth.timer",
+          "value": "1741082722414"
+        },
+        {
+          "name": "new_userinfoInvalid",
+          "value": "false"
+        },
+        {
+          "name": "_nano_fp",
+          "value": "XpmYXp9JX5mxX0TqXC_ZhFN7MTMrsAjKSqtg9d7X"
+        },
+        {
+          "name": "ISLOGIN",
+          "value": "1"
+        },
+        {
+          "name": "226_3_36_102_105_110_103_101_114_45_117_117_105_100_50_95_48_46_49_46_53",
+          "value": "226_3_72_102_57_51_51_53_48_99_98_45_55_97_97_50_45_52_54_57_52_45_97_51_56_48_45_57_102_56_100_57_99_98_51_53_99_55_56"
+        },
+        {
+          "name": "226_3_34_102_105_110_103_101_114_45_70_75_71_74_95_48_46_49_46_53",
+          "value": "226_3_64_114_108_108_97_108_115_98_68_108_89_74_79_49_90_118_100_122_53_107_104_83_75_116_121_90_122_51_66_49_118_108_108"
+        },
+        {
+          "name": "PAGE_NAV_CACHE",
+          "value": "{\"/home\":null}"
+        },
+        {
+          "name": "SPRING",
+          "value": "undefined"
+        }
+      ]
+    }
+  ]
+}
