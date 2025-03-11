@@ -489,19 +489,18 @@ class AccountManager:
         return username in self.refresh_processes
 
     def delete_account_file(self, account_name):
-        """删除账号的用户数据目录"""
-        account_folder_path = os.path.join(self.user_data_dir, account_name)
-        if os.path.exists(account_folder_path):
+        """删除账号的状态文件"""
+        # 删除浏览器存储状态文件
+        storage_dir = os.path.join(os.getcwd(), "browser_storage")
+        storage_file = os.path.join(storage_dir, f"{account_name}_state.json")
+        if os.path.exists(storage_file):
             try:
-                shutil.rmtree(account_folder_path, ignore_errors=True)
+                os.remove(storage_file)
+                self.logger.info(f"已删除账号 {account_name} 的浏览器存储状态文件")
             except Exception as e:
-                self.logger.error(f"删除账户文件夹时发生错误: {e}")
-                try:
-                    os.system(f'rmdir /S /Q "{account_folder_path}"')
-                except Exception as e:
-                    self.logger.error(f"使用系统命令删除账户文件夹时发生错误: {e}")
+                self.logger.error(f"删除浏览器存储状态文件时发生错误: {e}")
         else:
-            self.logger.debug(f"账户文件夹不存在: {account_folder_path}")
+            self.logger.debug(f"浏览器存储状态文件不存在: {storage_file}")
 
     async def edit_account(self, old_account_name, new_account_name, new_password):
         """

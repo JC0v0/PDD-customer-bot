@@ -1,4 +1,4 @@
-from PyQt6.QtCore import Qt, QSize
+from PyQt6.QtCore import Qt, QSize, QThread, pyqtSignal
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel,
                           QScrollArea, QFrame, QGridLayout, QDialog, QMenu, QCheckBox)
 from qfluentwidgets import (CardWidget, PushButton, PrimaryPushButton,
@@ -10,7 +10,7 @@ from qfluentwidgets import (CardWidget, PushButton, PrimaryPushButton,
 import json
 import os
 import asyncio
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from PDD.account_manager import AccountManager
 from PDD.Set_up_online import batch_set_csstatus
 from PDD.Set_up_online import set_csstatus
@@ -187,14 +187,14 @@ class AccountManagerView(QWidget):
         
         self.add_button = PrimaryPushButton('添加账号', self, icon=FluentIcon.ADD)
         self.refresh_button = PushButton('刷新列表', self, icon=FluentIcon.SYNC)
-        self.refresh_all_cookies_button = PushButton('刷新所有Cookies', self, icon=FluentIcon.SYNC)
-        self.status_button = PushButton('批量设置状态', self ,icon=FluentIcon.SETTING)
+        self.refresh_all_button = PushButton('刷新所有Cookies', self, icon=FluentIcon.SYNC)
+        self.status_button = PushButton('批量设置状态', self, icon=FluentIcon.SETTING)
         
         # 先添加伸缩器，使按钮靠右
         button_layout.addStretch()
         button_layout.addWidget(self.add_button)
         button_layout.addWidget(self.refresh_button)
-        button_layout.addWidget(self.refresh_all_cookies_button)
+        button_layout.addWidget(self.refresh_all_button)
         button_layout.addWidget(self.status_button)
         
         # 标题靠左，按钮靠右
@@ -221,8 +221,8 @@ class AccountManagerView(QWidget):
         # 连接信号
         self.add_button.clicked.connect(self.add_account)
         self.refresh_button.clicked.connect(self.load_accounts)
-        self.refresh_all_cookies_button.clicked.connect(
-            lambda: run_async(self.refresh_all_cookies())
+        self.refresh_all_button.clicked.connect(
+            lambda: self.refresh_all_cookies()
         )
         self.status_button.clicked.connect(self.show_status_allmenu)
         
@@ -273,7 +273,7 @@ class AccountManagerView(QWidget):
                 lambda action, account=account: self.set_account_status(account, action.text())
             )
             card.refresh_button.clicked.connect(
-                lambda checked, account=account: run_async(self.refresh_selected_cookies(account))
+                lambda checked, account=account: self.refresh_selected_cookies(account)
             )
             
             self.cards_layout.addWidget(card)
@@ -286,9 +286,23 @@ class AccountManagerView(QWidget):
         if dialog.exec():
             username, password = dialog.get_account_info()
             if username and password:
-                # 使用同步方式添加账号
-                run_async(self.account_manager.add_account(username, password))
-                self.load_accounts()
+                # 显示加载中提示
+                self.loading_info = InfoBar.new(
+                    icon=FluentIcon.DOWNLOAD,
+                    title='登录中',
+                    content=f"正在登录账号 {username}，请稍候...",
+                    orient=Qt.Orientation.Horizontal,
+                    isClosable=True,
+                    position=InfoBarPosition.TOP,
+                    duration=-1,  # 不自动关闭
+                    parent=self
+                )
+                
+                # 创建并启动登录线程
+                self.login_thread = LoginThread(self.account_manager, username, password)
+                self.login_thread.loginSuccess.connect(self.on_login_success)
+                self.login_thread.loginFailed.connect(self.on_login_failed)
+                self.login_thread.start()
             else:
                 InfoBar.warning(
                     title='添加失败',
@@ -299,7 +313,52 @@ class AccountManagerView(QWidget):
                     duration=3000,
                     parent=self
                 )
-                
+    
+    def on_login_success(self, username, cookies):
+        """登录成功的回调"""
+        # 关闭加载提示
+        if hasattr(self, 'loading_info'):
+            self.loading_info.close()
+            
+        # 保存账号信息
+        self.account_manager.accounts[username] = {
+            "password": self.login_thread.password,
+            "cookies": cookies,
+            "expiry_date": (datetime.now(timezone.utc) + timedelta(hours=12)).isoformat()
+        }
+        self.account_manager.save_accounts()
+        
+        # 显示成功提示
+        InfoBar.success(
+            title='添加成功',
+            content=f"账号 {username} 添加成功",
+            orient=Qt.Orientation.Horizontal,
+            isClosable=True,
+            position=InfoBarPosition.TOP,
+            duration=3000,
+            parent=self
+        )
+        
+        # 刷新账号列表
+        self.load_accounts()
+        
+    def on_login_failed(self, username, error_msg):
+        """登录失败的回调"""
+        # 关闭加载提示
+        if hasattr(self, 'loading_info'):
+            self.loading_info.close()
+            
+        # 显示错误提示
+        InfoBar.error(
+            title='登录失败',
+            content=f"账号 {username} 登录失败: {error_msg}",
+            orient=Qt.Orientation.Horizontal,
+            isClosable=True,
+            position=InfoBarPosition.TOP,
+            duration=5000,
+            parent=self
+        )
+
     def edit_account(self, account):
         dialog = AccountDialog(
             self,
@@ -310,14 +369,65 @@ class AccountManagerView(QWidget):
         if dialog.exec():
             new_username, new_password = dialog.get_account_info()
             if new_username and new_password:
-                run_async(
-                    self.account_manager.edit_account(
-                        account['username'],
-                        new_username,
-                        new_password
-                    )
+                # 显示加载中提示
+                self.loading_info = InfoBar.new(
+                    icon=FluentIcon.EDIT,
+                    title='编辑中',
+                    content=f"正在编辑账号 {account['username']}，请稍候...",
+                    orient=Qt.Orientation.Horizontal,
+                    isClosable=True,
+                    position=InfoBarPosition.TOP,
+                    duration=-1,  # 不自动关闭
+                    parent=self
                 )
-                self.load_accounts()
+                
+                # 创建并启动编辑线程
+                self.edit_thread = EditThread(
+                    self.account_manager,
+                    account['username'],
+                    new_username,
+                    new_password
+                )
+                self.edit_thread.editSuccess.connect(self.on_edit_success)
+                self.edit_thread.editFailed.connect(self.on_edit_failed)
+                self.edit_thread.start()
+                
+    def on_edit_success(self, old_username, new_username):
+        """编辑成功的回调"""
+        # 关闭加载提示
+        if hasattr(self, 'loading_info'):
+            self.loading_info.close()
+            
+        # 显示成功提示
+        InfoBar.success(
+            title='编辑成功',
+            content=f"账号 {old_username} 已更新为 {new_username}",
+            orient=Qt.Orientation.Horizontal,
+            isClosable=True,
+            position=InfoBarPosition.TOP,
+            duration=3000,
+            parent=self
+        )
+        
+        # 刷新账号列表
+        self.load_accounts()
+        
+    def on_edit_failed(self, username, error_msg):
+        """编辑失败的回调"""
+        # 关闭加载提示
+        if hasattr(self, 'loading_info'):
+            self.loading_info.close()
+            
+        # 显示错误提示
+        InfoBar.error(
+            title='编辑失败',
+            content=f"账号 {username} 编辑失败: {error_msg}",
+            orient=Qt.Orientation.Horizontal,
+            isClosable=True,
+            position=InfoBarPosition.TOP,
+            duration=5000,
+            parent=self
+        )
                 
     def delete_account(self, account):
         box = MessageBox(
@@ -326,9 +436,64 @@ class AccountManagerView(QWidget):
             self
         )
         if box.exec():
-            run_async(self.account_manager.remove_account(account['username']))
-            self.load_accounts()
+            # 显示加载中提示
+            self.loading_info = InfoBar.new(
+                icon=FluentIcon.DELETE,
+                title='删除中',
+                content=f"正在删除账号 {account['username']}，请稍候...",
+                orient=Qt.Orientation.Horizontal,
+                isClosable=True,
+                position=InfoBarPosition.TOP,
+                duration=-1,  # 不自动关闭
+                parent=self
+            )
             
+            # 创建并启动删除线程
+            self.delete_thread = DeleteThread(
+                self.account_manager,
+                account['username']
+            )
+            self.delete_thread.deleteSuccess.connect(self.on_delete_success)
+            self.delete_thread.deleteFailed.connect(self.on_delete_failed)
+            self.delete_thread.start()
+            
+    def on_delete_success(self, username):
+        """删除成功的回调"""
+        # 关闭加载提示
+        if hasattr(self, 'loading_info'):
+            self.loading_info.close()
+            
+        # 显示成功提示
+        InfoBar.success(
+            title='删除成功',
+            content=f"账号 {username} 已删除",
+            orient=Qt.Orientation.Horizontal,
+            isClosable=True,
+            position=InfoBarPosition.TOP,
+            duration=3000,
+            parent=self
+        )
+        
+        # 刷新账号列表
+        self.load_accounts()
+        
+    def on_delete_failed(self, username, error_msg):
+        """删除失败的回调"""
+        # 关闭加载提示
+        if hasattr(self, 'loading_info'):
+            self.loading_info.close()
+            
+        # 显示错误提示
+        InfoBar.error(
+            title='删除失败',
+            content=f"账号 {username} 删除失败: {error_msg}",
+            orient=Qt.Orientation.Horizontal,
+            isClosable=True,
+            position=InfoBarPosition.TOP,
+            duration=5000,
+            parent=self
+        )
+
     def set_account_status(self, account, status):
         account_data = self.account_manager.accounts.get(account['username'])
         if account_data:
@@ -358,90 +523,90 @@ class AccountManagerView(QWidget):
                     parent=self
                 )
                 
-    async def refresh_all_cookies(self):
+    def refresh_all_cookies(self):
         """刷新所有账号的cookies"""
-        if not self.accounts:
-            InfoBar.error(
-                title='错误',
-                content="没有找到任何账号",
-                orient=Qt.Orientation.Horizontal,
-                isClosable=True,
-                position=InfoBarPosition.TOP,
-                duration=2000,
-                parent=self
-            )
-            return
-
-        # 获取所有账号名称
-        account_names = [account['username'] for account in self.accounts if account.get('username')]
+        # 显示加载中提示
+        self.loading_info = InfoBar.new(
+            icon=FluentIcon.SYNC,
+            title='刷新中',
+            content="正在刷新所有账号的cookies，请稍候...",
+            orient=Qt.Orientation.Horizontal,
+            isClosable=True,
+            position=InfoBarPosition.TOP,
+            duration=-1,  # 不自动关闭
+            parent=self
+        )
         
-        # 使用batch_refresh_cookies_mt刷新所有账号
-        result = await self.account_manager.batch_refresh_cookies(account_names)
+        # 创建并启动刷新线程
+        self.refresh_thread = RefreshThread(
+            self.account_manager,
+            all_accounts=True
+        )
+        self.refresh_thread.allCompleted.connect(self.on_refresh_all_completed)
+        self.refresh_thread.start()
         
-        if result['success'] > 0:
-            InfoBar.success(
-                title='刷新完成',
-                content=f"成功刷新 {result['success']}/{result['total']} 个账号",
-                orient=Qt.Orientation.Horizontal,
-                isClosable=True,
-                position=InfoBarPosition.TOP,
-                duration=3000,
-                parent=self
-            )
-        
-        if result['failed'] > 0:
-            InfoBar.error(
-                title='部分失败',
-                content=f"有 {result['failed']} 个账号刷新失败",
-                orient=Qt.Orientation.Horizontal,
-                isClosable=True,
-                position=InfoBarPosition.TOP,
-                duration=3000,
-                parent=self
-            )
+    def on_refresh_all_completed(self, results):
+        """所有账号刷新完成的回调"""
+        # 关闭加载提示
+        if hasattr(self, 'loading_info'):
+            self.loading_info.close()
             
-        # 刷新完成后更新账号列表
+        # 显示结果提示
+        success_count = results.get('success', 0)
+        failed_count = results.get('failed', 0)
+        total_count = results.get('total', 0)
+        
+        if failed_count == 0:
+            InfoBar.success(
+                title='刷新成功',
+                content=f"所有 {total_count} 个账号刷新成功",
+                orient=Qt.Orientation.Horizontal,
+                isClosable=True,
+                position=InfoBarPosition.TOP,
+                duration=3000,
+                parent=self
+            )
+        else:
+            InfoBar.warning(
+                title='部分刷新成功',
+                content=f"共 {total_count} 个账号，{success_count} 个成功，{failed_count} 个失败",
+                orient=Qt.Orientation.Horizontal,
+                isClosable=True,
+                position=InfoBarPosition.TOP,
+                duration=5000,
+                parent=self
+            )
+        
+        # 刷新账号列表
         self.load_accounts()
-
-    async def refresh_selected_cookies(self, account):
+    
+    def refresh_selected_cookies(self, account):
         """刷新选中账号的cookies"""
         username = account.get('username', '')
         if not username:
             return
             
         if not self.account_manager.is_refreshing(username):
-            try:
-                success = await self.account_manager.refresh_account_cookies(username)
-                if success:
-                    InfoBar.success(
-                        title='成功',
-                        content=f"账号 {username} cookies刷新成功",
-                        orient=Qt.Orientation.Horizontal,
-                        isClosable=True,
-                        position=InfoBarPosition.TOP,
-                        duration=2000,
-                        parent=self
-                    )
-                else:
-                    InfoBar.error(
-                        title='错误',
-                        content=f"账号 {username} cookies刷新失败",
-                        orient=Qt.Orientation.Horizontal,
-                        isClosable=True,
-                        position=InfoBarPosition.TOP,
-                        duration=2000,
-                        parent=self
-                    )
-            except Exception as e:
-                InfoBar.error(
-                    title='错误',
-                    content=f"账号 {username} cookies刷新出错: {str(e)}",
-                    orient=Qt.Orientation.Horizontal,
-                    isClosable=True,
-                    position=InfoBarPosition.TOP,
-                    duration=2000,
-                    parent=self
-                )
+            # 显示加载中提示
+            self.loading_info = InfoBar.new(
+                icon=FluentIcon.SYNC,
+                title='刷新中',
+                content=f"正在刷新账号 {username} 的cookies，请稍候...",
+                orient=Qt.Orientation.Horizontal,
+                isClosable=True,
+                position=InfoBarPosition.TOP,
+                duration=-1,  # 不自动关闭
+                parent=self
+            )
+            
+            # 创建并启动刷新线程
+            self.refresh_thread = RefreshThread(
+                self.account_manager,
+                username=username
+            )
+            self.refresh_thread.refreshSuccess.connect(self.on_refresh_success)
+            self.refresh_thread.refreshFailed.connect(self.on_refresh_failed)
+            self.refresh_thread.start()
         else:
             InfoBar.warning(
                 title='正在刷新',
@@ -452,6 +617,43 @@ class AccountManagerView(QWidget):
                 duration=2000,
                 parent=self
             )
+            
+    def on_refresh_success(self, username):
+        """刷新成功的回调"""
+        # 关闭加载提示
+        if hasattr(self, 'loading_info'):
+            self.loading_info.close()
+            
+        # 显示成功提示
+        InfoBar.success(
+            title='成功',
+            content=f"账号 {username} cookies刷新成功",
+            orient=Qt.Orientation.Horizontal,
+            isClosable=True,
+            position=InfoBarPosition.TOP,
+            duration=2000,
+            parent=self
+        )
+        
+        # 刷新账号列表
+        self.load_accounts()
+        
+    def on_refresh_failed(self, username, error_msg):
+        """刷新失败的回调"""
+        # 关闭加载提示
+        if hasattr(self, 'loading_info'):
+            self.loading_info.close()
+            
+        # 显示错误提示
+        InfoBar.error(
+            title='错误',
+            content=f"账号 {username} cookies刷新失败: {error_msg}",
+            orient=Qt.Orientation.Horizontal,
+            isClosable=True,
+            position=InfoBarPosition.TOP,
+            duration=3000,
+            parent=self
+        )
 
     def show_status_allmenu(self):
         """显示状态设置菜单"""
@@ -491,3 +693,129 @@ class AccountManagerView(QWidget):
                 duration=2000,
                 parent=self
             )
+
+class LoginThread(QThread):
+    """处理账号登录的线程"""
+    loginSuccess = pyqtSignal(str, dict)  # 登录成功信号，传递账号名和cookies
+    loginFailed = pyqtSignal(str, str)    # 登录失败信号，传递账号名和错误信息
+    
+    def __init__(self, account_manager, username, password):
+        super().__init__()
+        self.account_manager = account_manager
+        self.username = username
+        self.password = password
+        
+    def run(self):
+        """线程运行函数"""
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        try:
+            cookies = loop.run_until_complete(
+                self.account_manager.auto_login(self.username, self.password)
+            )
+            if cookies:
+                self.loginSuccess.emit(self.username, cookies)
+            else:
+                self.loginFailed.emit(self.username, "登录失败，未获取到有效的cookies")
+        except Exception as e:
+            self.loginFailed.emit(self.username, str(e))
+        finally:
+            loop.close()
+
+class EditThread(QThread):
+    """处理账号编辑的线程"""
+    editSuccess = pyqtSignal(str, str)  # 编辑成功信号，传递旧账号名和新账号名
+    editFailed = pyqtSignal(str, str)   # 编辑失败信号，传递账号名和错误信息
+    
+    def __init__(self, account_manager, old_username, new_username, new_password):
+        super().__init__()
+        self.account_manager = account_manager
+        self.old_username = old_username
+        self.new_username = new_username
+        self.new_password = new_password
+        
+    def run(self):
+        """线程运行函数"""
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        try:
+            success = loop.run_until_complete(
+                self.account_manager.edit_account(
+                    self.old_username,
+                    self.new_username,
+                    self.new_password
+                )
+            )
+            if success:
+                self.editSuccess.emit(self.old_username, self.new_username)
+            else:
+                self.editFailed.emit(self.old_username, "编辑账号失败")
+        except Exception as e:
+            self.editFailed.emit(self.old_username, str(e))
+        finally:
+            loop.close()
+
+class DeleteThread(QThread):
+    """处理账号删除的线程"""
+    deleteSuccess = pyqtSignal(str)  # 删除成功信号，传递账号名
+    deleteFailed = pyqtSignal(str, str)  # 删除失败信号，传递账号名和错误信息
+    
+    def __init__(self, account_manager, username):
+        super().__init__()
+        self.account_manager = account_manager
+        self.username = username
+        
+    def run(self):
+        """线程运行函数"""
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        try:
+            success = loop.run_until_complete(
+                self.account_manager.remove_account(self.username)
+            )
+            if success:
+                self.deleteSuccess.emit(self.username)
+            else:
+                self.deleteFailed.emit(self.username, "删除账号失败")
+        except Exception as e:
+            self.deleteFailed.emit(self.username, str(e))
+        finally:
+            loop.close()
+
+class RefreshThread(QThread):
+    """处理刷新cookies的线程"""
+    refreshSuccess = pyqtSignal(str)  # 刷新成功信号，传递账号名
+    refreshFailed = pyqtSignal(str, str)  # 刷新失败信号，传递账号名和错误信息
+    allCompleted = pyqtSignal(dict)  # 所有刷新完成信号，传递结果字典
+    
+    def __init__(self, account_manager, username=None, all_accounts=False):
+        super().__init__()
+        self.account_manager = account_manager
+        self.username = username
+        self.all_accounts = all_accounts
+        
+    def run(self):
+        """线程运行函数"""
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        try:
+            if self.all_accounts:
+                # 批量刷新所有账号
+                results = loop.run_until_complete(
+                    self.account_manager.batch_refresh_cookies()
+                )
+                self.allCompleted.emit(results)
+            else:
+                # 刷新单个账号
+                success = loop.run_until_complete(
+                    self.account_manager.refresh_account_cookies(self.username)
+                )
+                if success:
+                    self.refreshSuccess.emit(self.username)
+                else:
+                    self.refreshFailed.emit(self.username, "刷新cookies失败")
+        except Exception as e:
+            if not self.all_accounts:
+                self.refreshFailed.emit(self.username, str(e))
+        finally:
+            loop.close()
