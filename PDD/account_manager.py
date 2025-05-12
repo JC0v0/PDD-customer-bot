@@ -10,7 +10,6 @@ from queue import Queue
 import concurrent.futures
 from playwright.async_api import async_playwright
 from config import LOGIN_URL
-import sys
 
 class AccountManager:
     def __init__(self, file_path='config/account_cookies.json'):
