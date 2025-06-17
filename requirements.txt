@@ -8,3 +8,4 @@ PyQt6-Fluent-Widgets[full] -i https://pypi.org/simple/
 cozepy
 flask
 flask-sqlalchemy
+
