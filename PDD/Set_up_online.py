@@ -1,7 +1,6 @@
 import json
 import requests
 from typing import Dict, Any
-from config.config import set_csstatus_url,LOGIN_URL
 from utils.logger import get_logger
 
 

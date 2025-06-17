@@ -5,7 +5,7 @@ from qfluentwidgets import (TextEdit, PrimaryPushButton, PushButton,
 import threading
 import asyncio
 import traceback
-from PDD.app import monitor_all_accounts
+from PDD.pdd_app import PDDApp
 from utils.logger import get_logger, get_log_queue
 
 
@@ -13,15 +13,17 @@ class MonitorThread(QThread):
     finished = pyqtSignal()
     error = pyqtSignal(str)
     
-    def __init__(self, stop_event):
+    def __init__(self, stop_event, account_name=None):
         super().__init__()
         self.stop_event = stop_event
+        self.account_name = account_name  # 新增账号名参数
         
     def run(self):
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         try:
-            loop.run_until_complete(monitor_all_accounts(self.stop_event))
+            app = PDDApp(self.account_name)
+            loop.run_until_complete(app.start())
         except Exception as e:
             self.error.emit(str(e))
             traceback.print_exc()
@@ -90,7 +92,9 @@ class MonitorView(QWidget):
             self.start_button.setEnabled(False)
             self.stop_button.setEnabled(True)
             
-            self.monitor_thread = MonitorThread(self.stop_event)
+            # TODO: 这里请填写实际账号名
+            account_name = "请填写账号名"
+            self.monitor_thread = MonitorThread(self.stop_event, account_name=account_name)
             self.monitor_thread.finished.connect(self.on_monitoring_finished)
             self.monitor_thread.error.connect(self.on_monitoring_error)
             self.monitor_thread.start()

@@ -1,4 +1,4 @@
-from config.config import COZE_API_URL, coze_token, coze_bot_id
+from config.config import coze_token, coze_bot_id
 from utils.logger import get_logger, get_log_queue
 from cozepy import Coze, TokenAuth
 from datetime import datetime, timedelta
@@ -6,7 +6,7 @@ from utils.conversation import ConversationModel
 from utils.database import db, app
 import os
 
-coze = Coze(auth=TokenAuth(token=coze_token),base_url=COZE_API_URL)
+coze = Coze(auth=TokenAuth(token=coze_token),base_url="https://api.coze.cn")
 
 class CozeAgent:
     def __init__(self):

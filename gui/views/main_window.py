@@ -6,7 +6,6 @@ from qfluentwidgets import FluentIcon as FIF
 
 from .monitor_view import MonitorView
 from .keyword_manager_view import KeywordManagerView
-from .account_manager_view import AccountManagerView
 
 
 class MainWindow(FluentWindow):
@@ -17,10 +16,8 @@ class MainWindow(FluentWindow):
         # 创建主要视图
         self.monitor_view = MonitorView(self)
         self.keyword_manager_view = KeywordManagerView(self)
-        self.account_manager_view = AccountManagerView(self)
 
         # 添加子页面到堆叠窗口
-        self.addSubInterface(self.account_manager_view, FIF.PEOPLE, '账号管理')
         self.addSubInterface(self.monitor_view, FIF.CHAT, '消息监控')
         self.addSubInterface(self.keyword_manager_view, FIF.EDIT, '关键词管理')
 
@@ -33,7 +30,7 @@ class MainWindow(FluentWindow):
         self.navigationInterface.setMinimumWidth(200)
         
         # 设置默认选中的界面
-        qrouter.setDefaultRouteKey(self.navigationInterface, self.account_manager_view.objectName())
+        qrouter.setDefaultRouteKey(self.navigationInterface, self.monitor_view.objectName())
 
     def initWindow(self):
         self.resize(1000, 800)

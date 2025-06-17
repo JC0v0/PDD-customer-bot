@@ -1,4 +1,3 @@
-
 import websockets
 import json
 from utils.logger import get_logger
@@ -6,6 +5,8 @@ from PDD.pdd_message import PDDChatMessage
 from PDD.get_token import get_token
 from PDD.pdd_message import ContextType
 from AI.Coze.coze_agent import CozeAgent
+from PDD.keyword_transfer import KeywordTransfer
+from PDD.conversation_transfer import ConversationTransfer
 import requests
 import time
 logger = get_logger(__name__)
@@ -28,10 +29,11 @@ class PDDApp:
         self.no_reply_types = {
             ContextType.MALL_CS,  # 商城客服消息（自己发的）
             ContextType.SYSTEM_STATUS,  # 系统状态消息
-            ContextType.WITHDRAW,  # 撤回消息
             ContextType.AUTH,  # 认证消息
             ContextType.MALL_SYSTEM_MSG,  # 商城系统消息
         }
+        self.keyword_transfer = KeywordTransfer()
+        self.conversation_transfer = ConversationTransfer(self.account_name, self.headers, self.cookies)
 
 
 
@@ -106,11 +108,22 @@ class PDDApp:
             
             logger.info(f"格式化后的内容: {formatted_content}")
             
-            # 生成AI回复
-            reply = await self.generate_ai_reply(data.from_uid, formatted_content)
-            
+            # 关键词自动转接判断
+            if self.keyword_transfer.need_human_service(formatted_content):
+                logger.info(f"检测到关键词，尝试为用户 {data.from_uid} 转接人工客服")
+                # 转人工
+                import asyncio
+                transfer_result = await asyncio.to_thread(self.conversation_transfer.auto_transfer_conversation, data.from_uid)
+                if transfer_result and transfer_result.get('success') and transfer_result['success'].get('result') == 'ok':
+                    reply = "您的请求已收到，正在为您转接人工客服，请稍候。"
+                else:
+                    reply = "抱歉，转接人工客服失败，请稍后再试。"
+            else:
+                # 生成AI回复
+                reply = await self.generate_ai_reply(data.from_uid, formatted_content)
+
             if reply:
-                logger.info(f"AI回复: {reply}")
+                logger.info(f"系统回复: {reply}")
                 # 发送回复
                 success = self.send_message(data.from_uid, reply)
                 if success:
@@ -118,7 +131,7 @@ class PDDApp:
                 else:
                     logger.error(f"回复用户 {data.from_uid} 失败")
             else:
-                logger.warning(f"AI生成回复失败，用户: {data.from_uid}")
+                logger.warning(f"系统生成回复失败，用户: {data.from_uid}")
                 
         except Exception as e:
             logger.error(f"处理消息时发生异常: {e}")

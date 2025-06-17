@@ -6,7 +6,7 @@ from PDD.pdd_login import PDDLogin
 
 async def main():
     login = PDDLogin()
-    result = await login.login(name="葵花康复器械景诚", password="JC.020401")
+    result = await login.login()
     if result:
         print("登录成功！")
     else:

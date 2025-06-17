@@ -6,13 +6,13 @@ import os
 
 from utils.logger import get_logger
 from playwright.async_api import async_playwright
-
+from config.config import account_name,password
 class PDDLogin():
     def __init__(self):
         self.logger = get_logger(__name__)
         self.base_url = "https://mms.pinduoduo.com/home"
 
-    async def login(self,name,password):
+    async def login(self):
         """使用账号密码登录
         
         Args:
@@ -53,10 +53,10 @@ class PDDLogin():
             await page.wait_for_selector("input[type='text']")
             
             # 输入店铺名
-            await page.fill("input[type='text']", name)
+            await page.fill("input[type='text']", account_name)
             
             # 输入密码
-            await page.fill("input[type='password']", password)
+            await page.fill("input[type='password']", password) 
             
             # 点击登录按钮
             await page.click("button:has-text('登录')")
