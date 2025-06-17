@@ -1,0 +1,18 @@
+[project]
+name = "pdd-customer-bot"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "cozepy>=0.16.2",
+    "flask>=3.1.1",
+    "flask-sqlalchemy>=3.1.1",
+    "playwright>=1.52.0",
+    "pyinstaller>=6.14.1",
+    "pyqt6-fluent-widgets[full]>=1.8.1",
+    "requests>=2.32.4",
+    "selenium>=4.33.0",
+    "selenium-stealth>=1.0.6",
+    "webdriver-manager>=4.0.2",
+]

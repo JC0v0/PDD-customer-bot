@@ -1,7 +1,7 @@
 import requests
 import random
 import time
-from config import getAssignCsList_url, move_conversation_url
+from config.config import getAssignCsList_url, move_conversation_url
 from utils.logger import get_logger, get_log_queue
 
 class ConversationTransfer:

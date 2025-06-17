@@ -17,10 +17,10 @@ import time
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
 from PDD.messages import Message
-from config import *
+from config.config import *
 from PDD.keyword_transfer import KeywordTransfer
 from PDD.conversation_transfer import ConversationTransfer
-from AI.Coze.coze_api import CozeAPIHandler
+from AI.Coze.coze_agent import CozeAPIHandler
 from utils.logger import get_logger,get_log_queue
 import queue
 
@@ -52,59 +52,61 @@ class AccountMonitor:
         self.reply_executor = ThreadPoolExecutor(max_workers=5)  # 用于处理回复的线程池
         self.logger = get_logger('app')
         self.log_queue = get_log_queue()
-    def get_latest_messages(self):
-        data = {"data":{"cmd":"latest_conversations","size":100}}
-        try:
-            response = requests.post(LATEST_CONVERSATIONS_URL, headers=self.headers, json=data, cookies=self.cookies)
-            response.raise_for_status()
-            return response.json()
-        except requests.exceptions.RequestException as e:
-            self.logger.error(f"账号 {self.account_name} 请求发生异常：{e}")
-            return None
+
+    # 获取最新消息
+    # def get_latest_messages(self):
+    #     data = {"data":{"cmd":"latest_conversations","size":100}}
+    #     try:
+    #         response = requests.post(LATEST_CONVERSATIONS_URL, headers=self.headers, json=data, cookies=self.cookies)
+    #         response.raise_for_status()
+    #         return response.json()
+    #     except requests.exceptions.RequestException as e:
+    #         self.logger.error(f"账号 {self.account_name} 请求发生异常：{e}")
+    #         return None
         
-    def process_new_messages(self, messages):
-        processed_messages = []
-        for msg_data in messages:
-            msg = Message.from_dict(msg_data)
-            if not msg.status == 'read':
-                message_info = {
-                    "账号": self.account_name,
-                    "时间": msg.timestamp,
-                    "店铺名称": msg.mallName,
-                    "发送者": f"{msg.from_user.uid} (角色: {msg.from_user.role})",
-                    "接收者": f"{msg.to_user.uid} (角色: {msg.to_user.role})",
-                    "内容": msg.content,
-                    "消息ID": msg.msg_id,
-                    "消息类型": msg.type,
-                    "是否自动回复": '是' if msg.is_aut else '否',
-                    "是否人工回复": '是' if msg.manual_reply else '否',
-                    "消息状态": msg.status,
-                    "是否已读": '是' if msg.is_read else '否'
-                }
+    # def process_new_messages(self, messages):
+    #     processed_messages = []
+    #     for msg_data in messages:
+    #         msg = Message.from_dict(msg_data)
+    #         if not msg.status == 'read':
+    #             message_info = {
+    #                 "账号": self.account_name,
+    #                 "时间": msg.timestamp,
+    #                 "店铺名称": msg.mallName,
+    #                 "发送者": f"{msg.from_user.uid} (角色: {msg.from_user.role})",
+    #                 "接收者": f"{msg.to_user.uid} (角色: {msg.to_user.role})",
+    #                 "内容": msg.content,
+    #                 "消息ID": msg.msg_id,
+    #                 "消息类型": msg.type,
+    #                 "是否自动回复": '是' if msg.is_aut else '否',
+    #                 "是否人工回复": '是' if msg.manual_reply else '否',
+    #                 "消息状态": msg.status,
+    #                 "是否已读": '是' if msg.is_read else '否'
+    #             }
                 
-                if msg.cs_type is not None:
-                    message_info["客服类型"] = msg.cs_type
-                if msg.from_user.csid:
-                    message_info["客服ID"] = msg.from_user.csid
+    #             if msg.cs_type is not None:
+    #                 message_info["客服类型"] = msg.cs_type
+    #             if msg.from_user.csid:
+    #                 message_info["客服ID"] = msg.from_user.csid
                 
-                # 获取商品信息(如果存在)
-                info = msg.info
-                if info:
-                    good_info = {}
-                    if 'goodsName' in info:
-                        good_info["商品名称"] = info['goodsName']
-                    if 'tagList' in info:
-                        good_info["商品标签"] = ', '.join(tag['text'] for tag in info['tagList'])
-                    if 'serviceTags' in info and isinstance(info['serviceTags'], dict):
-                        good_info["服务标签"] = ', '.join(info['serviceTags'].get('tags', []))
-                    if 'spec' in info:
-                        good_info["商品规格"] = info['spec']
+    #             # 获取商品信息(如果存在)
+    #             info = msg.info
+    #             if info:
+    #                 good_info = {}
+    #                 if 'goodsName' in info:
+    #                     good_info["商品名称"] = info['goodsName']
+    #                 if 'tagList' in info:
+    #                     good_info["商品标签"] = ', '.join(tag['text'] for tag in info['tagList'])
+    #                 if 'serviceTags' in info and isinstance(info['serviceTags'], dict):
+    #                     good_info["服务标签"] = ', '.join(info['serviceTags'].get('tags', []))
+    #                 if 'spec' in info:
+    #                     good_info["商品规格"] = info['spec']
                     
-                    if good_info:
-                        message_info["商品信息"] = good_info
+    #                 if good_info:
+    #                     message_info["商品信息"] = good_info
                 
-                processed_messages.append(message_info)
-        return processed_messages
+    #             processed_messages.append(message_info)
+    #     return processed_messages
 
     def send_customer_service_message(self, recipient_uid, message_content):
         data = {

@@ -9,7 +9,7 @@ from utils.logger import get_logger
 from queue import Queue
 import concurrent.futures
 from playwright.async_api import async_playwright
-from config import LOGIN_URL
+from config.config import LOGIN_URL
 
 class AccountManager:
     def __init__(self, file_path='config/account_cookies.json'):
@@ -21,6 +21,7 @@ class AccountManager:
         self.refresh_callbacks = {}  # 添加回调函数字典
         self.browsers = {}  # 存储已创建的浏览器实例
 
+    # 加载账号配置文件
     def load_accounts(self):
         try:
             with open(self.file_path, 'r', encoding='utf-8') as f:
@@ -36,14 +37,36 @@ class AccountManager:
             return {}
 
     def parse_expiry_date(self, expiry_date_str):
+        """
+        解析过期日期字符串并返回标准化的ISO格式日期字符串。
+        
+        此函数用于处理账号配置中的过期日期，确保所有日期都具有时区信息
+        并以ISO格式存储。如果输入的日期字符串无效或为空，则返回一个
+        默认的过期时间（当前时间+12小时）。
+        
+        Args:
+            expiry_date_str (str): 过期日期字符串，可能为None或空字符串
+            
+        Returns:
+            str: ISO格式的日期时间字符串，包含UTC时区信息
+        """
+        # 检查是否提供了过期日期字符串
         if expiry_date_str:
             try:
+                # 尝试从ISO格式字符串解析日期时间对象
                 expiry_date = datetime.fromisoformat(expiry_date_str)
+                
+                # 如果解析的日期时间对象没有时区信息，则添加UTC时区
                 if expiry_date.tzinfo is None:
                     expiry_date = expiry_date.replace(tzinfo=timezone.utc)
+                
+                # 返回标准化的ISO格式字符串
                 return expiry_date.isoformat()
             except ValueError:
+                # 如果日期字符串格式无效，返回默认过期时间（当前时间+12小时）
                 return (datetime.now(timezone.utc) + timedelta(hours=12)).isoformat()
+        
+        # 如果没有提供过期日期字符串，返回默认过期时间（当前时间+12小时）
         return (datetime.now(timezone.utc) + timedelta(hours=12)).isoformat()
 
     def save_accounts(self):
