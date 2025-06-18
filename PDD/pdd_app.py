@@ -15,8 +15,9 @@ coze_agent = CozeAgent()
 
 
 class PDDApp:
-    def __init__(self, account_name):
+    def __init__(self, account_name, stop_event=None):
         self.account_name = account_name
+        self.stop_event = stop_event  # 添加停止事件
         self.access_token = get_token(account_name)
         self.cookies = json.load(open('config/cookies.json', 'r', encoding='utf-8'))
         self.headers = {
@@ -57,9 +58,13 @@ class PDDApp:
             ) as websocket:
                 logger.info(f"WebSocket连接成功: {full_url}")
                 async for message in websocket:
+                    # 检查停止事件
+                    if self.stop_event and self.stop_event.is_set():
+                        logger.info("检测到停止信号，正在安全退出...")
+                        break
+                    
                     try:
                         message_data = json.loads(message)
-                        logger.info(f"收到消息: {json.dumps(message_data,indent=4,ensure_ascii=False)}")
                         
                         data = PDDChatMessage(message_data)
                         
@@ -74,6 +79,16 @@ class PDDApp:
                         continue
         except Exception as e:
             logger.error(f"连接错误: {str(e)}")
+        finally:
+            logger.info("WebSocket连接已关闭")
+
+
+    # 停止账号
+    async def stop(self):
+        if self.stop_event:
+            self.stop_event.set()
+        logger.info("账号已停止")
+
 
     async def handle_message(self, data):
         """统一的消息处理方法"""
@@ -96,8 +111,6 @@ class PDDApp:
                     old_messages = list(self.processed_messages)[:1000]
                     for old_msg in old_messages:
                         self.processed_messages.discard(old_msg)
-            
-            logger.info(f"用户消息类型: {data.user_msg_type}, 发送者: {data.from_uid}")
             
             # 格式化消息内容
             formatted_content = self.format_message_content(data)
@@ -123,7 +136,7 @@ class PDDApp:
                 reply = await self.generate_ai_reply(data.from_uid, formatted_content)
 
             if reply:
-                logger.info(f"系统回复: {reply}")
+                logger.info(f"AI回复: {reply}")
                 # 发送回复
                 success = self.send_message(data.from_uid, reply)
                 if success:
@@ -172,6 +185,9 @@ class PDDApp:
         elif msg_type == ContextType.EMOTION:
             return f"用户发送了表情: {content}"
         
+        elif msg_type == ContextType.SYSTEM_TRANSFER:
+            return f"收到转接消息: {content}"
+        
         elif msg_type == ContextType.GOODS_CARD:
             if isinstance(content, dict):
                 return (f"用户查看了商品卡片:\n"
@@ -196,8 +212,6 @@ class PDDApp:
                        f"商品名称: {content.get('goods_name', '未知')}\n")
             return "用户查询了订单信息"
         
-        elif msg_type == ContextType.SYSTEM_TRANSFER:
-            return f"系统转接消息: {content}"
         
         else:
             logger.warning(f"未处理的消息类型: {msg_type}")
@@ -279,17 +293,3 @@ class PDDApp:
             return False
 
 
-# # 便捷启动函数
-# async def start_pdd_bot(account_name):
-#     """启动拼多多客服机器人"""
-#     try:
-#         bot = PDDApp(account_name)
-#         logger.info(f"启动拼多多客服机器人，账号：{account_name}")
-#         await bot.start()
-#     except Exception as e:
-#         logger.error(f"启动机器人失败：{e}")
-
-
-# if __name__ == "__main__":
-#     import asyncio
-#     asyncio.run(start_pdd_bot("葵花康复器械景诚"))

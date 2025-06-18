@@ -1,4 +1,4 @@
-from PyQt6.QtCore import Qt, QThread, pyqtSignal
+from PyQt6.QtCore import Qt, QThread, pyqtSignal, QTimer
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout
 from qfluentwidgets import (TextEdit, PrimaryPushButton, PushButton,
                           FluentIcon, InfoBar, InfoBarPosition)
@@ -22,7 +22,7 @@ class MonitorThread(QThread):
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         try:
-            app = PDDApp(self.account_name)
+            app = PDDApp(self.account_name, self.stop_event)  # 传递stop_event
             loop.run_until_complete(app.start())
         except Exception as e:
             self.error.emit(str(e))
@@ -124,11 +124,44 @@ class MonitorView(QWidget):
                 parent=self
             )
             
+            # 启动超时检查定时器
+            self.stop_timer = QTimer()
+            self.stop_timer.setSingleShot(True)
+            self.stop_timer.timeout.connect(self.force_stop)
+            self.stop_timer.start(10000)  # 10秒超时
+            
+    def force_stop(self):
+        """强制停止监控（超时后调用）"""
+        if self.monitoring:
+            self.logger.warning("监控停止超时，强制重置状态")
+            self.monitoring = False
+            self.start_button.setEnabled(True)
+            self.stop_button.setEnabled(False)
+            
+            # 如果线程还在运行，尝试终止它
+            if self.monitor_thread and self.monitor_thread.isRunning():
+                self.monitor_thread.terminate()
+                self.monitor_thread.wait(1000)  # 等待1秒
+                
+            InfoBar.warning(
+                title='监控已强制停止',
+                content='监控已超时强制停止',
+                orient=Qt.Orientation.Horizontal,
+                isClosable=True,
+                position=InfoBarPosition.TOP,
+                duration=3000,
+                parent=self
+            )
+            
     def on_monitoring_finished(self):
         self.monitoring = False
         self.start_button.setEnabled(True)
         self.stop_button.setEnabled(False)
         self.logger.info("监控已完全停止")
+        
+        # 取消超时定时器
+        if hasattr(self, 'stop_timer'):
+            self.stop_timer.stop()
         
         InfoBar.success(
             title='监控已停止',

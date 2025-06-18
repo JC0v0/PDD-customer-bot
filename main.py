@@ -2,8 +2,6 @@ import sys
 from PyQt6.QtWidgets import QApplication
 from gui.views.main_window import MainWindow
 from qfluentwidgets import FluentTranslator
-from PyQt6.QtGui import QIcon
-
 
 def main():
     # 创建应用程序实例
@@ -15,7 +13,6 @@ def main():
     
     # 创建并显示主窗口
     window = MainWindow()
-    window.setWindowIcon(QIcon("icon/图标智能客服.ico"))
     window.show()
     
     # 运行应用程序
