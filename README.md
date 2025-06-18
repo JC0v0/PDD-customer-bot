@@ -106,7 +106,7 @@ python main.py
 
 ## 🛠️ 技术架构
 
-- **前端界面**: tkinter GUI
+- **前端界面**: qfluentwidgets
 - **后端逻辑**: Python + asyncio
 - **AI集成**: Coze API
 - **数据存储**: SQLite + JSON
