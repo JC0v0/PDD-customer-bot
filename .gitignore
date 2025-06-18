@@ -1,5 +1,5 @@
 # Python 缓存文件
-*/__pycache__/
+__pycache__
 *.py[cod]
 *$py.class
 *.so
@@ -26,8 +26,9 @@ MANIFEST
 test/
 
 # 配置文件（可能包含敏感信息）
-config/
-
+config.json
+cookies.json
+conversations.db
 # 日志文件
 *.log
 
@@ -60,3 +61,4 @@ venv.bak/
 .Trashes
 ehthumbs.db
 Thumbs.db
+

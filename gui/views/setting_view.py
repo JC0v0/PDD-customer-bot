@@ -1,58 +1,11 @@
-from PyQt6.QtCore import Qt, QThread, pyqtSignal
+from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QGridLayout
 from qfluentwidgets import (LineEdit, PrimaryPushButton, PushButton,
                           FluentIcon, InfoBar, InfoBarPosition,
                           TitleLabel, SubtitleLabel, BodyLabel, CardWidget, 
                           StrongBodyLabel, CaptionLabel, TextEdit, HyperlinkLabel)
-import traceback
+from config.config_manager import get_config
 from utils.logger import get_logger
-
-
-class ConfigSaveThread(QThread):
-    """配置保存线程"""
-    finished = pyqtSignal(bool)  # 保存结果
-    error = pyqtSignal(str)  # 错误信息
-    
-    def __init__(self, coze_token, coze_bot_id):
-        super().__init__()
-        self.coze_token = coze_token
-        self.coze_bot_id = coze_bot_id
-        self.logger = get_logger('config_save')
-        
-    def run(self):
-        """执行配置保存"""
-        try:
-            self.save_config()
-            self.finished.emit(True)
-        except Exception as e:
-            self.logger.error(f"保存配置异常: {e}")
-            self.error.emit(str(e))
-            traceback.print_exc()
-            
-    def save_config(self):
-        """保存配置到文件"""
-        try:
-            config_path = 'config/config.py'
-            with open(config_path, 'r', encoding='utf-8') as f:
-                content = f.read()
-            
-            # 替换配置参数
-            lines = content.split('\n')
-            for i, line in enumerate(lines):
-                if line.strip().startswith('coze_token ='):
-                    lines[i] = f'coze_token = "{self.coze_token}"'
-                elif line.strip().startswith('coze_bot_id ='):
-                    lines[i] = f'coze_bot_id = "{self.coze_bot_id}"'
-            
-            # 写回文件
-            with open(config_path, 'w', encoding='utf-8') as f:
-                f.write('\n'.join(lines))
-                
-            self.logger.info("配置文件已更新")
-            
-        except Exception as e:
-            self.logger.error(f"更新配置文件失败: {e}")
-            raise
 
 
 class SettingView(QWidget):
@@ -62,7 +15,7 @@ class SettingView(QWidget):
         super().__init__(parent=parent)
         self.setObjectName('settingView')
         self.logger = get_logger('setting_view')
-        self.save_thread = None
+        self.config_manager = get_config()  # 获取配置管理器实例
         
         self.initUI()
         
@@ -188,18 +141,9 @@ class SettingView(QWidget):
     def load_config(self):
         """从配置文件加载配置"""
         try:
-            with open('config/config.py', 'r', encoding='utf-8') as f:
-                content = f.read()
-                
-            coze_token = ""
-            coze_bot_id = ""
-            
-            for line in content.split('\n'):
-                line = line.strip()
-                if line.startswith('coze_token ='):
-                    coze_token = line.split('=')[1].strip().strip('"')
-                elif line.startswith('coze_bot_id ='):
-                    coze_bot_id = line.split('=')[1].strip().strip('"')
+            # 使用配置管理器加载配置
+            coze_token = self.config_manager.coze_token or ""
+            coze_bot_id = self.config_manager.coze_bot_id or ""
             
             # 填充到输入框
             self.token_input.setText(coze_token)
@@ -212,6 +156,8 @@ class SettingView(QWidget):
             else:
                 self.status_label.setText("请完善配置信息")
                 self.status_label.setStyleSheet("color: #fa8c16; padding: 10px;")
+                
+            self.logger.info("配置加载成功")
                 
         except Exception as e:
             self.logger.warning(f"加载配置失败: {e}")
@@ -241,8 +187,8 @@ class SettingView(QWidget):
             self.show_error("Bot ID 应为纯数字")
             return
             
-        # 开始保存
-        self.start_save(coze_token, coze_bot_id)
+        # 直接保存配置
+        self.save_config(coze_token, coze_bot_id)
         
     def on_reset_clicked(self):
         """重置按钮点击事件"""
@@ -261,60 +207,51 @@ class SettingView(QWidget):
         )
         
         
-    def start_save(self, coze_token, coze_bot_id):
-        """开始保存配置"""
-        self.logger.info("开始保存配置...")
-        
-        # 禁用按钮
-        self.save_button.setEnabled(False)
-        self.reset_button.setEnabled(False)
-        
-        # 更新状态
-        self.status_label.setText("正在保存配置...")
-        self.status_label.setStyleSheet("color: #1890ff; padding: 10px;")
-        
-        # 创建并启动保存线程
-        self.save_thread = ConfigSaveThread(coze_token, coze_bot_id)
-        self.save_thread.finished.connect(self.on_save_finished)
-        self.save_thread.error.connect(self.on_save_error)
-        self.save_thread.start()
-        
-    def on_save_finished(self, success):
-        """保存完成"""
-        if success:
-            self.logger.info("配置保存成功")
-            self.status_label.setText("配置保存成功！")
-            self.status_label.setStyleSheet("color: #52c41a; padding: 10px;")
+    def save_config(self, coze_token, coze_bot_id):
+        """保存配置"""
+        try:
+            self.logger.info("开始保存配置...")
             
-            InfoBar.success(
-                title='保存成功',
-                content='配置已成功保存到系统',
-                orient=Qt.Orientation.Horizontal,
-                isClosable=True,
-                position=InfoBarPosition.TOP,
-                duration=3000,
-                parent=self
-            )
-        else:
-            self.show_error("配置保存失败")
+            # 禁用按钮
+            self.save_button.setEnabled(False)
+            self.reset_button.setEnabled(False)
             
-        # 恢复按钮状态
-        self.reset_ui()
+            # 更新状态
+            self.status_label.setText("正在保存配置...")
+            self.status_label.setStyleSheet("color: #1890ff; padding: 10px;")
             
-    def on_save_error(self, error_msg):
-        """保存错误"""
-        self.logger.error(f"保存配置错误: {error_msg}")
-        
-        # 恢复按钮状态
-        self.reset_ui()
-        
-        # 显示错误信息
-        self.show_error(f"保存失败: {error_msg}")
-        
-    def reset_ui(self):
-        """重置UI状态"""
-        self.save_button.setEnabled(True)
-        self.reset_button.setEnabled(True)
+            # 使用配置管理器保存配置
+            self.config_manager.coze_token = coze_token
+            self.config_manager.coze_bot_id = coze_bot_id
+            
+            # 保存到文件
+            success = self.config_manager.save_config()
+            
+            if success:
+                self.logger.info("配置保存成功")
+                self.status_label.setText("配置保存成功！")
+                self.status_label.setStyleSheet("color: #52c41a; padding: 10px;")
+                
+                InfoBar.success(
+                    title='保存成功',
+                    content='配置已成功保存到系统',
+                    orient=Qt.Orientation.Horizontal,
+                    isClosable=True,
+                    position=InfoBarPosition.TOP,
+                    duration=3000,
+                    parent=self
+                )
+            else:
+                self.show_error("配置保存失败")
+                
+        except Exception as e:
+            self.logger.error(f"保存配置异常: {e}")
+            self.show_error(f"保存失败: {str(e)}")
+            
+        finally:
+            # 恢复按钮状态
+            self.save_button.setEnabled(True)
+            self.reset_button.setEnabled(True)
         
     def show_error(self, message):
         """显示错误信息"""
@@ -333,9 +270,4 @@ class SettingView(QWidget):
         
     def closeEvent(self, event):
         """关闭事件"""
-        # 停止保存线程
-        if self.save_thread and self.save_thread.isRunning():
-            self.save_thread.terminate()
-            self.save_thread.wait(1000)
-            
         super().closeEvent(event)

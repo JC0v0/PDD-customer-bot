@@ -6,11 +6,12 @@ import os
 
 from utils.logger import get_logger
 from playwright.async_api import async_playwright
-from config.config import account_name,password
+from config.config_manager import get_config
 class PDDLogin():
     def __init__(self):
         self.logger = get_logger(__name__)
         self.base_url = "https://mms.pinduoduo.com/home"
+        self.config_manager = get_config()  # 获取配置管理器实例
 
     async def login(self):
         """使用账号密码登录
@@ -51,6 +52,15 @@ class PDDLogin():
             
             # 等待页面加载
             await page.wait_for_selector("input[type='text']")
+            
+            # 从配置管理器获取账号信息
+            account_name = self.config_manager.account_name or ""
+            password = self.config_manager.password or ""
+            
+            # 验证配置是否有效
+            if not account_name or not password:
+                self.logger.error("账号名或密码未配置")
+                return False
             
             # 输入店铺名
             await page.fill("input[type='text']", account_name)

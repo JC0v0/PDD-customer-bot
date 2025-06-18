@@ -1,7 +1,7 @@
 import requests
 import random
 import time
-from config.config import getAssignCsList_url, move_conversation_url
+from config.config_manager import get_config
 from utils.logger import get_logger, get_log_queue
 
 class ConversationTransfer:
@@ -10,10 +10,12 @@ class ConversationTransfer:
         self.headers = headers
         self.cookies = cookies
         self.logger = get_logger('conversation_transfer')
+        self.config_manager = get_config()  # 获取配置管理器实例
         
     def get_online_cs_list(self):
         data = {"wechatCheck": True}
         try:
+            getAssignCsList_url = self.config_manager.getAssignCsList_url
             response = requests.post(getAssignCsList_url, headers=self.headers, json=data, cookies=self.cookies)
             if response.status_code == 200:
                 result = response.json()
@@ -38,6 +40,7 @@ class ConversationTransfer:
             "client": "WEB"
         }
         try:
+            move_conversation_url = self.config_manager.move_conversation_url
             response = requests.post(move_conversation_url, headers=self.headers, json=data, cookies=self.cookies)
             if response.status_code == 200:
                 return response.json()

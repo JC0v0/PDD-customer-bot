@@ -6,6 +6,7 @@ import threading
 import asyncio
 import traceback
 from PDD.pdd_app import PDDApp
+from PDD.Set_up_online import SetUpOnline
 from utils.logger import get_logger, get_log_queue
 
 
@@ -40,6 +41,7 @@ class MonitorView(QWidget):
         self.monitoring = False
         self.stop_event = threading.Event()
         self.monitor_thread = None
+        self.setup_online = SetUpOnline()  # 初始化在线状态设置实例
         
         self.initUI()
         self.start_log_listener()
@@ -50,9 +52,11 @@ class MonitorView(QWidget):
         self.output_text.setPlaceholderText("监控日志将在此显示...")
         
         # 创建按钮
-        self.start_button = PrimaryPushButton('开始监控', self, icon=FluentIcon.PLAY)
+        self.start_button = PrimaryPushButton('开始监控', self, icon=FluentIcon.ROBOT)
         self.stop_button = PushButton('停止监控', self, icon=FluentIcon.PAUSE)
         self.clear_button = PushButton('清空输出', self, icon=FluentIcon.DELETE)
+        self.online_button = PushButton('立即上线', self, icon=FluentIcon.PLAY)
+        self.offline_button = PushButton('离线', self, icon=FluentIcon.POWER_BUTTON)
         
         self.stop_button.setEnabled(False)
         
@@ -60,6 +64,8 @@ class MonitorView(QWidget):
         self.start_button.clicked.connect(self.start_monitoring)
         self.stop_button.clicked.connect(self.stop_monitoring)
         self.clear_button.clicked.connect(self.clear_output)
+        self.online_button.clicked.connect(self.set_online)
+        self.offline_button.clicked.connect(self.set_offline)
         
         # 布局
         button_layout = QHBoxLayout()
@@ -67,6 +73,8 @@ class MonitorView(QWidget):
         button_layout.addWidget(self.stop_button)
         button_layout.addWidget(self.clear_button)
         button_layout.addStretch()
+        button_layout.addWidget(self.online_button)
+        button_layout.addWidget(self.offline_button)
         
         main_layout = QVBoxLayout(self)
         main_layout.addWidget(self.output_text)
@@ -191,4 +199,82 @@ class MonitorView(QWidget):
         self.output_text.append(message)
         # 滚动到底部
         scrollbar = self.output_text.verticalScrollBar()
-        scrollbar.setValue(scrollbar.maximum()) 
+        scrollbar.setValue(scrollbar.maximum())
+        
+    def set_online(self):
+        """设置在线状态"""
+        try:
+            result = self.setup_online.set_csstatus("在线")
+            if result.get('success'):
+                self.logger.info("已成功设置为在线状态")
+                InfoBar.success(
+                    title='状态已更新',
+                    content='已成功设置为在线状态',
+                    orient=Qt.Orientation.Horizontal,
+                    isClosable=True,
+                    position=InfoBarPosition.TOP,
+                    duration=3000,
+                    parent=self
+                )
+            else:
+                error_msg = result.get('error', '未知错误')
+                self.logger.error(f"设置在线状态失败: {error_msg}")
+                InfoBar.error(
+                    title='状态更新失败',
+                    content=f'设置在线状态失败: {error_msg}',
+                    orient=Qt.Orientation.Horizontal,
+                    isClosable=True,
+                    position=InfoBarPosition.TOP,
+                    duration=5000,
+                    parent=self
+                )
+        except Exception as e:
+            self.logger.error(f"设置在线状态异常: {str(e)}")
+            InfoBar.error(
+                title='操作异常',
+                content=f'设置在线状态异常: {str(e)}',
+                orient=Qt.Orientation.Horizontal,
+                isClosable=True,
+                position=InfoBarPosition.TOP,
+                duration=5000,
+                parent=self
+            )
+            
+    def set_offline(self):
+        """设置离线状态"""
+        try:
+            result = self.setup_online.set_csstatus("离线")
+            if result.get('success'):
+                self.logger.info("已成功设置为离线状态")
+                InfoBar.success(
+                    title='状态已更新',
+                    content='已成功设置为离线状态',
+                    orient=Qt.Orientation.Horizontal,
+                    isClosable=True,
+                    position=InfoBarPosition.TOP,
+                    duration=3000,
+                    parent=self
+                )
+            else:
+                error_msg = result.get('error', '未知错误')
+                self.logger.error(f"设置离线状态失败: {error_msg}")
+                InfoBar.error(
+                    title='状态更新失败',
+                    content=f'设置离线状态失败: {error_msg}',
+                    orient=Qt.Orientation.Horizontal,
+                    isClosable=True,
+                    position=InfoBarPosition.TOP,
+                    duration=5000,
+                    parent=self
+                )
+        except Exception as e:
+            self.logger.error(f"设置离线状态异常: {str(e)}")
+            InfoBar.error(
+                title='操作异常',
+                content=f'设置离线状态异常: {str(e)}',
+                orient=Qt.Orientation.Horizontal,
+                isClosable=True,
+                position=InfoBarPosition.TOP,
+                duration=5000,
+                parent=self
+            ) 

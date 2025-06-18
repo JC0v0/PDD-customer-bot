@@ -7,6 +7,7 @@ from qfluentwidgets import (LineEdit, PasswordLineEdit, PrimaryPushButton, PushB
 import asyncio
 import traceback
 from PDD.pdd_login import PDDLogin
+from config.config_manager import get_config
 from utils.logger import get_logger
 
 
@@ -20,6 +21,7 @@ class LoginThread(QThread):
         self.account_name = account_name
         self.password = password
         self.logger = get_logger('user_login')
+        self.config_manager = get_config()
         
     def run(self):
         """执行登录"""
@@ -46,24 +48,17 @@ class LoginThread(QThread):
     def update_config(self):
         """更新配置文件中的账号密码"""
         try:
-            config_path = 'config/config.py'
-            with open(config_path, 'r', encoding='utf-8') as f:
-                content = f.read()
+            # 使用配置管理器更新配置
+            self.config_manager.account_name = self.account_name
+            self.config_manager.password = self.password
             
-            # 替换账号名和密码
-            lines = content.split('\n')
-            for i, line in enumerate(lines):
-                if line.strip().startswith('account_name ='):
-                    lines[i] = f'account_name = "{self.account_name}"'
-                elif line.strip().startswith('password ='):
-                    lines[i] = f'password = "{self.password}"'
-            
-            # 写回文件
-            with open(config_path, 'w', encoding='utf-8') as f:
-                f.write('\n'.join(lines))
+            # 保存到文件
+            success = self.config_manager.save_config()
+            if success:
+                self.logger.info("配置文件已更新")
+            else:
+                self.logger.error("配置文件更新失败")
                 
-            self.logger.info("配置文件已更新")
-            
         except Exception as e:
             self.logger.error(f"更新配置文件失败: {e}")
 
@@ -76,6 +71,7 @@ class UserView(QWidget):
         self.setObjectName('userView')
         self.logger = get_logger('user_view')
         self.login_thread = None
+        self.config_manager = get_config()  # 获取配置管理器实例
         
         self.initUI()
         
@@ -172,8 +168,14 @@ class UserView(QWidget):
         )
         info_content.setStyleSheet("color: #666; line-height: 1.5;")
         
+        # 配置状态显示
+        self.config_status_label = BodyLabel("", self)
+        self.config_status_label.setStyleSheet("color: #52c41a; margin-top: 10px;")
+        self.update_config_status()
+        
         info_layout.addWidget(info_title)
         info_layout.addWidget(info_content)
+        info_layout.addWidget(self.config_status_label)
         
         # 添加到主布局
         main_layout.addLayout(title_layout)
@@ -193,18 +195,29 @@ class UserView(QWidget):
     def load_saved_account(self):
         """从配置文件加载已保存的账号"""
         try:
-            with open('config/config.py', 'r', encoding='utf-8') as f:
-                content = f.read()
-                
-            for line in content.split('\n'):
-                if line.strip().startswith('account_name ='):
-                    account_name = line.split('=')[1].strip().strip('"')
-                    if account_name and account_name != "请填写账号名":
-                        self.account_input.setText(account_name)
-                        break
+            # 使用配置管理器加载账号
+            account_name = self.config_manager.account_name or ""
+            if account_name and account_name != "请填写账号名":
+                self.account_input.setText(account_name)
+                self.logger.info("已加载保存的账号信息")
+            else:
+                self.logger.info("未找到已保存的账号信息")
                         
         except Exception as e:
             self.logger.warning(f"加载已保存账号失败: {e}")
+    
+    def update_config_status(self):
+        """更新配置状态显示"""
+        try:
+            account_name = self.config_manager.account_name or ""
+            if account_name and account_name != "请填写账号名":
+                self.config_status_label.setText(f"✓ 当前已保存账号: {account_name}")
+                self.config_status_label.setStyleSheet("color: #52c41a; margin-top: 10px;")
+            else:
+                self.config_status_label.setText("⚠ 尚未保存任何账号信息")
+                self.config_status_label.setStyleSheet("color: #fa8c16; margin-top: 10px;")
+        except Exception as e:
+            self.logger.warning(f"更新配置状态失败: {e}")
             
     def on_login_clicked(self):
         """登录按钮点击事件"""
@@ -278,6 +291,9 @@ class UserView(QWidget):
             self.logger.info("登录成功")
             self.status_label.setText("登录成功！配置已保存")
             self.status_label.setStyleSheet("color: #52c41a; padding: 10px;")
+            
+            # 更新配置状态显示
+            self.update_config_status()
             
             InfoBar.success(
                 title='登录成功',

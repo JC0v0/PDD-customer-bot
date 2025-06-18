@@ -19,7 +19,7 @@ STATUS_MAP = {
 
 class SetUpOnline:
     def __init__(self):
-        self.cookies = json.load(open('config/cookies.json', 'r', encoding='utf-8'))
+        
         self.logger = get_logger('set_up_online')
         
 
@@ -41,9 +41,9 @@ class SetUpOnline:
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
             'Content-Type': 'application/json',
         }
-
+        cookies = json.load(open('config/cookies.json', 'r', encoding='utf-8'))
         try:
-            response = requests.post(set_csstatus_url, headers=headers, json=data, cookies=self.cookies)
+            response = requests.post(set_csstatus_url, headers=headers, json=data, cookies=cookies)
             
             if response.status_code == 200:
                 return {'success': True}
