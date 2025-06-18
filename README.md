@@ -144,7 +144,7 @@ PDD-customer-bot/
 
 - **问题反馈**: [GitHub Issues](https://github.com/JC0v0/PDD-customer-bot/issues)
 - **功能建议**: 欢迎通过 Issues 提出您的想法
-- **技术交流**: 期待与您的交流与合作
+- **技术交流**: 点击链接加入腾讯频道【Customer-Agent】：https://pd.qq.com/s/45wvtz4g6?b=5
 
 ---
 
