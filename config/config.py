@@ -5,9 +5,9 @@ move_conversation_url="https://mms.pinduoduo.com/plateau/chat/move_conversation"
 
 
 # coze
-coze_token = "pat_4NVl6fHb7290nPHmFoCDlvzYToQG4BfvfrzXw7ZEyAA3hj1spfW34RZUv46H3uXy"
-coze_bot_id = "7454084191555272758"
+coze_token = "pat_4NVl6***************************"
+coze_bot_id = "74540*********"
 
 # 账号信息
-account_name = "葵花康复器械景诚"
-password = "JC.020401"
+account_name = "****旗舰店"
+password = "123456"

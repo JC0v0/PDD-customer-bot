@@ -1,1 +1,10 @@
-*__pycache__*
+__pycache__/
+test/
+config/
+*.pyc
+*.pyo
+*.pyd
+*.pyw
+*.pyz
+*.pywz
+*.pyzw
