@@ -8,4 +8,4 @@ PyQt6-Fluent-Widgets[full]
 cozepy
 flask
 flask-sqlalchemy
-
+websockets>=10.4
