@@ -1,0 +1,8 @@
+{
+    "getAssignCsList_url": "https://mms.pinduoduo.com/latitude/assign/getAssignCsList",
+    "move_conversation_url": "https://mms.pinduoduo.com/plateau/chat/move_conversation",
+    "coze_token": "pat_4NVl6fHb7290**************",
+    "coze_bot_id": "74540************",
+    "account_name": "************", // 拼多多账号名
+    "password": "************" // 拼多多密码
+}

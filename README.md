@@ -57,13 +57,18 @@
 
 1. **克隆项目**
    ```bash
-   git clone https://github.com/JC0v0/PDD-customer-bot.git
-   cd PDD-customer-bot
+   git clone https://github.com/JC0v0/Customer-Agent.git
+   cd Customer-Agent
    ```
 
 2. **安装依赖**
    ```bash
-   pip install -r requirements.txt
+   ##使用uv进行环境配置
+   ##安装uv
+   pip install uv
+
+   uv venv
+   uv sync
    ```
 
 3. **安装浏览器驱动**
@@ -73,10 +78,16 @@
 
 4. **配置API密钥**
    
-   在 `config/config.py` 文件中设置您的 Coze API 配置：
-   ```python
-   coze_token = "pat_bUk***************"
-   coze_bot_id = "73*************"
+   在 `config/config.json` 文件中设置您的 Coze API 配置：
+   ```bash
+   cp config-template.json config.json
+   ```      
+
+   ```json
+   {
+       "coze_token": "pat_4NVl6fHb7290nP********",
+       "coze_bot_id": "74540****"
+   }
    ```
 
 ## 📱 使用指南
@@ -107,7 +118,7 @@ python main.py
 ## 🛠️ 技术架构
 
 - **前端界面**: qfluentwidgets
-- **后端逻辑**: Python + asyncio
+- **后端逻辑**: Python
 - **AI集成**: Coze API
 - **数据存储**: SQLite + JSON
 - **浏览器自动化**: Playwright
@@ -115,7 +126,7 @@ python main.py
 ## 📁 项目结构
 
 ```
-PDD-customer-bot/
+Customer-Agent/
 ├── AI/                 # AI相关模块
 ├── PDD/                # 拼多多平台接口
 ├── config/             # 配置文件
